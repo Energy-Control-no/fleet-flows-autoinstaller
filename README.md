@@ -1,12 +1,12 @@
 # Fleet Flow Autoinstaller
 
-This repository contains the `fleet-flow-autoinstaller` script, designed to automate the setup and configuration of the Fleet Flow environment. The script handles various tasks such as installing necessary dependencies, setting up SSH keys, updating Airtable records, and configuring systemd services.
+This repository contains the `fleet-flow-autoinstaller` script, designed to automate the setup and configuration of the Fleet Flow environment. The script handles various tasks such as installing necessary dependencies, setting up SSH keys, updating Airtable records with key, and configuring systemd services.
 
 ## Features
 
 - Automatic installation of required packages and tools.
 - Generation and configuration of SSH keys for secure communication.
-- Airtable integration for updating and creating records.
+- Airtable integration for updating and creating records, and authenticating to the remote repository.
 - Git repository cloning and management.
 - Systemd service setup for Fleet Flow components.
 
