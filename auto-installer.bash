@@ -12,11 +12,11 @@ GIT_SERVER="ssh://git@fleet-flow-git.lizzardsolutions.com/home/git/git"
 AIRTABLE_API_KEY="$1"
 AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
 AIRTABLE_TABLE_NAME="Unipi"
-HOSTNAME=$(echo "G110-sn1")
+HOSTNAME=${hostname}
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 BRANCH="main"
 # Update package lists
-sudo apt update
+#sudo apt update
 
 # Check and install required packages
 ensure_installed() {
@@ -59,12 +59,14 @@ fetch_airtable_record_id_by_hostname() {
     local hostname=$1
     # Encoding the formula: {Device id} = 'hostname'
     local encodedFormula=$(printf "{Device id} = '%s'" "$hostname" | jq -sRr @uri)
+
     local response=$(curl -X GET \
         "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=${encodedFormula}" \
         -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
         -H "Content-Type: application/json")
 
-   #  echo "$response"
+  
+
     echo $(echo $response | jq -r '.records[0].id // empty')
 }
 # Function to update Airtable record with SSH Public Key
@@ -74,9 +76,10 @@ update_airtable_record() {
     local data=$(jq -n \
                     --arg sshKey "$ssh_key" \
                     '{fields: {"SSH Public Key": $sshKey}}')
-
+    echo " record id ${record_id}"
+    echo \n   
     local response=$(curl -X PATCH \
-        "https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}/${record_id}" \
+        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}/${record_id}" \
         -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
         -H "Content-Type: application/json" \
         -d "$data")
