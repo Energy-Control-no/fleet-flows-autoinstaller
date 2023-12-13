@@ -46,10 +46,10 @@ update_ssh_key_in_airtable() {
     echo "Fetched record id ?${record_id}?"
     if [ -n "$record_id" ]; then
         # Update existing record
-        echo "Here we are"
+        echo "Updating Existing Record"
         update_airtable_record "$record_id" "$pubkey"
     else
-        echo "WE ARE HERE "
+        echo "Create new Record"
         # Create new record
         create_airtable_record "$HOSTNAME" "$pubkey"
     fi
