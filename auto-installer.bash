@@ -16,7 +16,7 @@ HOSTNAME=${hostname}
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 BRANCH="main"
 # Update package lists
-#sudo apt update
+sudo apt update
 
 # Check and install required packages
 ensure_installed() {
