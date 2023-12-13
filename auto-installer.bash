@@ -102,7 +102,7 @@ create_airtable_record() {
                     --arg type "$type" \
                     --arg sn "$sn" \
                     --arg sshKey "$ssh_key" \
-                    '{records: [{fields: {"type": $type, "Unipi SN": ($sn | tonumber), "SSH Public Key": $sshKey}}]}')
+                    '{"records": [{"fields": {"type": $type, "Unipi SN": ($sn | tonumber), "SSH Public Key": $sshKey}}]}')
 
     local response=$(curl -X POST \
         "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}" \
