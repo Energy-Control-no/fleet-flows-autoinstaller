@@ -148,7 +148,7 @@ clone_repository "fleet-flows-js" ${BRANCH}
 
 # Run npm install in fleet-flows-js
 cd fleet-flows-js
-  #npm install
+npm install
 cd ..
 
 # Create .env file
