@@ -243,6 +243,7 @@ if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
         # Restore the backed-up files
         echo "Restoring files..."
         cd $PROJECT_DIR
+        npm i 
         for file in "${FILES_TO_BACKUP[@]}"; do
             if [ -f "$BACKUP_DIR/$file" ]; then
                 cp $BACKUP_DIR/$file .
