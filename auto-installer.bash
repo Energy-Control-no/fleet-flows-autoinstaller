@@ -175,7 +175,7 @@ create_systemd_service() {
     local service_path="/etc/systemd/system/fleet-flows-js.service"
     sudo bash -c "cat > $service_path" <<EOL
 [Unit]
-Description=My npm run start service
+Description=OTA flow updates and flow compiling
 After=network.target
 
 [Service]
