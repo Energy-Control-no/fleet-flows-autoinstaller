@@ -23,4 +23,4 @@ This repository contains the `fleet-flow-autoinstaller` script, designed to auto
 To install and run the Fleet Flow Autoinstaller, execute the following command:
 
 ```bash
-curl -sSL [URL to the raw auto-installer script] | bash -s -- [Your Airtable API Key]
+curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flow-autoinstaller/main/auto-installer.bash | bash -s -- [Your Airtable API Key]
