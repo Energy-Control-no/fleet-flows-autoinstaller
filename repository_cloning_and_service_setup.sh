@@ -61,7 +61,7 @@ WantedBy=multi-user.target
 EOL
 
     sudo systemctl enable fleet-flows-js.service
-    sudo systemctl start fleet-flows-js.service
+# disabled , we do not have schema file upon install.    sudo systemctl start fleet-flows-js.service
 }
 
 create_systemd_service
@@ -73,24 +73,79 @@ create_auto_update_job() {
     sudo tee $AUTO_UPDATER_SCRIPT > /dev/null <<'EOL'
 #!/bin/bash
 
-# Rest of the script content for auto-updater...
-# This section should contain the logic to auto-update your project.
-# Ensure to include git fetch, backup, and git clone commands.
-# ...
+# Set the project directory and backup directory
+PROJECT_DIR=$HOME/fleet-flows-js
+BACKUP_DIR=$HOME/fleet-flows-js.backup
+REMOTE_REPO=${GIT_SERVER}/fleet-flows-js.git
+FILES_TO_BACKUP=("schema.yml" ".env") # Add other files as needed
+BRANCH=${BRANCH}
+if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
+    cd $PROJECT_DIR
+    echo "Current Directory: $(pwd)"
 
+    # Fetch the latest commits from the remote
+    git fetch
+
+    # Compare local HEAD and remote HEAD
+    LOCAL_SHA=$(git rev-parse HEAD)
+    REMOTE_SHA=$(git rev-parse origin/main)
+
+    if [ "$LOCAL_SHA" != "$REMOTE_SHA" ]; then
+        echo "Updating the project..."
+
+        # Backup specified files
+        echo "Backing up files..."
+        mkdir -p $BACKUP_DIR
+        for file in "${FILES_TO_BACKUP[@]}"; do
+            if [ -f "$file" ]; then
+                cp $file $BACKUP_DIR/
+            else
+                echo "Warning: File $file not found for backup."
+            fi
+        done
+
+        # Delete the project directory
+        echo "Deleting old project directory..."
+        cd ..
+        rm -rf $PROJECT_DIR
+
+        # Clone the remote repository
+        echo "Cloning the remote repository..."
+        git clone --single-branch --branch $BRANCH $REMOTE_REPO $PROJECT_DIR
+
+        # Restore the backed-up files
+        echo "Restoring files..."
+        cd $PROJECT_DIR
+        npm i 
+        for file in "${FILES_TO_BACKUP[@]}"; do
+            if [ -f "$BACKUP_DIR/$file" ]; then
+                cp $BACKUP_DIR/$file .
+            else
+                echo "Warning: Backup of $file not found for restoration."
+            fi
+        done
+
+        echo "Update complete."
+    else
+        echo "Project is already up to date."
+    fi
+else
+    echo "Error: The directory $PROJECT_DIR is not a valid Git repository."
+fi
 EOL
     sudo chmod +rx $AUTO_UPDATER_SCRIPT
     LOG_FILE="/var/log/auto_updater_ffjs.log"
     # Setup the cronjob for auto-update
-    (crontab -l 2>/dev/null; echo "0 * * * * $AUTO_UPDATER_SCRIPT >> $LOG_FILE 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "0 * * * * $AUTO_UPDATER_SCRIPT >> $LOG_FILE 2>&1") | crontab -
     echo "auto-update is setup $AUTO_UPDATER_SCRIPT"
+
 }
 create_auto_update_job
 
 # Restart on changes
 restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
-    LOG_FILE="/var/log/restart_change_ffjs.log"
+    LOG_FILE="/usr/local/bin/frestart_change_ffjs.log"
 
     sudo tee $RESTART_SCRIPT > /dev/null <<EOL
 #!/bin/bash
