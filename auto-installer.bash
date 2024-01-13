@@ -32,7 +32,7 @@ if ! command -v n >/dev/null 2>&1; then
     echo "n is not installed. Installing n..."
     # Install n (Node.js version manager)
     curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
-    bash n lts
+    sudo bash n lts
     # Ensure the n command is available
     PATH="$PATH"
 fi
