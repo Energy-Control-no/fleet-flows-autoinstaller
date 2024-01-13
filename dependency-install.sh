@@ -11,8 +11,8 @@ AIRTABLE_API_KEY="$1"
 HOSTNAME=$(hostname)
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 # Update package lists
-#sudo apt update
-#sudo apt upgrade
+sudo apt update
+sudo apt upgrade
 
 # Check and install required packages
 ensure_installed() {
@@ -121,7 +121,9 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     echo "Generating new SSH key..."
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
-
+check_git_access() {
+    ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 | grep -q "successfully authenticated"
+}
 # Check Git access and update Airtable if necessary
 if ! check_git_access; then
     echo "Git server access failed. Updating SSH key in Airtable..."
