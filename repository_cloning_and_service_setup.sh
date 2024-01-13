@@ -92,7 +92,7 @@ restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
     LOG_FILE="/var/log/restart_change_ffjs.log"
 
-    sudo tee $RESTART_SCRIPT > /dev/null <<'EOL'
+    sudo tee $RESTART_SCRIPT > /dev/null <<EOL
 #!/bin/bash
 
 # Define the project directory
@@ -127,7 +127,7 @@ restart_on_changes
 
 # Create Fleet Flow JS Listener Service
 create_fleet_flow_js_listener_service() {
-    SERVICE_FILE="/etc/systemd/system/fleet-flow-js-listener.service"
+    SERVICE_FILE="/etc/systemd/system/fleet-flows-js-listener.service"
 
     sudo tee $SERVICE_FILE > /dev/null <<EOL
 [Unit]
@@ -145,9 +145,9 @@ WantedBy=multi-user.target
 EOL
 
     sudo systemctl daemon-reload
-    sudo systemctl enable fleet-flow-js-listener
-    sudo systemctl start fleet-flow-js-listener
+    sudo systemctl enable fleet-flows-js-listener
+    sudo systemctl start fleet-flows-js-listener
 
-    echo "Fleet Flow JS Listener Service is setup and started."
+    echo "Fleet Flows JS Listener Service is setup and started. "
 }
 create_fleet_flow_js_listener_service
