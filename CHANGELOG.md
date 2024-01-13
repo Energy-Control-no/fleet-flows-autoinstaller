@@ -1,3 +1,12 @@
+## [0.1.1](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.0...v0.1.1) (2024-01-13)
+
+
+### Bug Fixes
+
+* supplied action file to workflow ([252432b](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/252432b5476ebb69b02265146038b8f05966b696))
+
+
+
 # [0.1.0](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.0.1...v0.1.0) (2024-01-13)
 
 
