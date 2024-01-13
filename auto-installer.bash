@@ -31,8 +31,7 @@ ensure_installed() {
 if ! command -v n >/dev/null 2>&1; then
     echo "n is not installed. Installing n..."
     # Install n (Node.js version manager)
-    curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
-    sudo bash n lts
+    sudo npm install -g n
     # Ensure the n command is available
     PATH="$PATH"
 fi
