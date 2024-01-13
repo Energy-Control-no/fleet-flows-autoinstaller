@@ -27,7 +27,23 @@ ensure_installed() {
         echo "$1 is already installed."
     fi
 }
+# Check if 'n' is installed
+if ! command -v n >/dev/null 2>&1; then
+    echo "n is not installed. Installing n..."
+    # Install n (Node.js version manager)
+    curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
+    bash n lts
+    # Ensure the n command is available
+    PATH="$PATH"
+fi
 
+# Update Node.js to the latest version using 'n'
+sudo n latest
+
+# Update npm to the latest version
+sudo npm install -g npm@latest
+
+echo "Node.js and npm are updated to the latest versions."
 # Install Node.js, npm, and Node-RED
 ensure_installed inotify-tools
 ensure_installed node
@@ -35,6 +51,7 @@ ensure_installed npm
 ensure_installed git
 ensure_installed jq
 ensure_installed nano
+
 if ! command -v node-red &> /dev/null; then
     bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
 fi
