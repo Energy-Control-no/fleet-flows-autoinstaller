@@ -11,7 +11,8 @@ AIRTABLE_API_KEY="$1"
 HOSTNAME=$(hostname)
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 # Update package lists
-sudo apt update
+#sudo apt update
+#sudo apt upgrade
 
 # Check and install required packages
 ensure_installed() {

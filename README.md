@@ -19,13 +19,13 @@ Installation
 
     bash
 
-git clone [repository-url]
+git clone git@github.com:Energy-Control-no/fleet-flow-autoinstaller.git
 
 Navigate to the cloned directory:
 
 bash
 
-cd [repository-name]
+cd fleet-flow-autoinstaller
 
 Make the scripts executable:
 
