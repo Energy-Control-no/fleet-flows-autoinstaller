@@ -13,6 +13,8 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3.7.1 
         with:
           github-token: ${{ secrets. CHANGELOG_RELEASE }}
+          git-user-name: 'Changelog Action'
+          git-user-email: 'awesome_changelog@github.actions.com'
       - name: create release
         uses: actions/create-release@v1
         if: ${{ steps.changelog.outputs.skipped =='false' }}
