@@ -70,7 +70,7 @@ create_systemd_service
 create_auto_update_job() {
     AUTO_UPDATER_SCRIPT="/usr/local/bin/auto_updater_ffjs.sh"
 
-    sudo tee $AUTO_UPDATER_SCRIPT > /dev/null <<'EOL'
+    sudo tee $AUTO_UPDATER_SCRIPT > /dev/null <<EOL
 #!/bin/bash
 
 # Set the project directory and backup directory
