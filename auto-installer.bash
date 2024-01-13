@@ -37,7 +37,8 @@ if ! command -v n >/dev/null 2>&1; then
 fi
 
 # Update Node.js to the latest version using 'n'
-sudo n latest
+n lts
+n latest
 
 # Update npm to the latest version
 sudo npm install -g npm@latest
