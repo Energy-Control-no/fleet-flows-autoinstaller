@@ -4,7 +4,7 @@
 GIT_CLONED_DIRS=("$HOME/fleet-files" "$HOME/fleet-flows-js")
 SERVICE_FILES=("/etc/systemd/system/fleet-flows-js.service" "/etc/systemd/system/fleet-flows-js-listener.service")
 SCRIPT_FILES=("/usr/local/bin/auto_updater_ffjs.sh" "/usr/local/bin/restart_change_ffjs.sh")
-
+cd /home/unipi/
 # Function to remove cloned repositories
 remove_cloned_repos() {
     for dir in "${GIT_CLONED_DIRS[@]}"; do
