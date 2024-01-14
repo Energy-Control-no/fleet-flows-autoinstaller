@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.10...v0.2.0) (2024-01-14)
+
+
+### Features
+
+* added a one script for install ([eecb6d3](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/eecb6d39de92afe782bbc2b21581e2a464c1f913))
+
+
+
 ## [0.1.10](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.9...v0.1.10) (2024-01-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * log file location changed ([eaf192b](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/eaf192bac620487a07aeb7f869406d33f4349588))
-
-
-
-## [0.1.6](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.5...v0.1.6) (2024-01-14)
-
-
-### Bug Fixes
-
-* variable missing ([027d89f](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/027d89f8c473c4ce02d93fc1c98fb66048805150))
 
 
 
