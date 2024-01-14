@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.3...v0.1.4) (2024-01-14)
+
+
+### Bug Fixes
+
+* escaping env variables ([a7730ed](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/a7730edc3eae2c8c124bf44bc6e4c8c0b690212c))
+
+
+
 ## [0.1.3](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.2...v0.1.3) (2024-01-14)
 
 
@@ -31,10 +40,6 @@
 ### Bug Fixes
 
 * correct parsing of env variables ([8e5a36b](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/8e5a36b290ceaed1d1938833f1ebfce8e74bce53))
-
-
-
-## 0.0.1 (2024-01-13)
 
 
 
