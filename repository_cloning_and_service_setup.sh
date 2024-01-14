@@ -191,7 +191,8 @@ After=network.target
 [Service]
 Type=simple
 User=$(whoami)
-ExecStart=/usr/local/bin/restart_change_ffjs.sh
+WorkingDirectory=/usr/local/bin/
+ExecStart=restart_change_ffjs.sh
 Restart=on-failure
 
 [Install]
