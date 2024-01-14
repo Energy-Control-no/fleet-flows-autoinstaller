@@ -11,6 +11,27 @@ AIRTABLE_API_KEY="$1"
 HOSTNAME=$(hostname)
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 # Update package lists
+
+check_airtable_api_key() {
+    local api_key=$1
+
+    # Making a test request to Airtable
+    local response=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+        "https://api.airtable.com/v0/meta/bases" \
+        -H "Authorization: Bearer ${api_key}")
+
+    # Check if the HTTP status code is 200 (OK)
+    if [ "$response" -ne 200 ]; then
+        echo "Invalid API key. Stopping the script."
+        exit 1
+    else
+        echo "API key is valid."
+        # Continue with the rest of the script
+    fi
+}
+
+check_airtable_api_key "$AIRTABLE_API_KEY"
+
 sudo apt update
 sudo apt upgrade
 
