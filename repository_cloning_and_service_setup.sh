@@ -145,11 +145,11 @@ create_auto_update_job
 # Restart on changes
 restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
-    LOG_FILE="/usr/local/bin/frestart_change_ffjs.log"
     sudo tee $RESTART_SCRIPT > /dev/null <<EOL
 
 # Define the project directory
 PROJECT_DIR=\$HOME/fleet-flows-js
+LOG_FILE="/usr/local/bin/frestart_change_ffjs.log"
 
 # List of files to monitor within the project directory
 FILES=("schema.yml" ".env")
