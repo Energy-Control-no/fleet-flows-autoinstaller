@@ -21,7 +21,7 @@ check_airtable_api_key() {
     # Making a test request to Airtable
     local response=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
         "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}" \
-        -H "Authorization: Bearer${AIRTABLE_API_KEY}")
+        -H "Authorization: Bearer ${AIRTABLE_API_KEY}")
 
     # Check if the HTTP status code is 200 (OK)
     if [ "$response" -ne 200 ]; then

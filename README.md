@@ -17,6 +17,13 @@ To install and run the Fleet Flows Autoinstaller, execute the following command:
 ```bash
 curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flows-autoinstaller/main/full-install.sh | bash -s -- [Your Airtable API Key] 
 ``` 
+## Remove
+
+To install and run the Fleet Flows Autoinstaller, execute the following command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flows-autoinstaller/main/remove.sh| bash -s 
+``` 
 ## Features
 
 - **Automated Installation**: Quickly sets up Fleet Flows without manual intervention.
