@@ -146,14 +146,10 @@ create_auto_update_job
 restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
     LOG_FILE="/usr/local/bin/frestart_change_ffjs.log"
-
- 
     sudo tee $RESTART_SCRIPT > /dev/null <<EOL
-    
-#!/bin/bash
 
 # Define the project directory
-PROJECT_DIR=\$HOME/fleet-flows-js"
+PROJECT_DIR=\$HOME/fleet-flows-js
 
 # List of files to monitor within the project directory
 FILES=("schema.yml" ".env")
@@ -161,7 +157,7 @@ FILES=("schema.yml" ".env")
 # Function to monitor changes and restart the service
 monitor_and_restart() {
     echo "Monitoring files for changes..." >> "\$LOG_FILE"
-    inotifywait -m -e modify -q "${\FILES[@]/#/\$PROJECT_DIR/}" | while read -r line; do
+    inotifywait -m -e modify -q \${FILES[@]/#/\$PROJECT_DIR/} | while read -r line; do
         if systemctl is-active --quiet fleet-flows-js.service; then
             echo "File change detected: \$line" >> "\$LOG_FILE"
             echo "Restarting the fleet-flows-js service..." >> "\$LOG_FILE"
@@ -181,6 +177,7 @@ EOL
     echo "Restart Script is setup $RESTART_SCRIPT"
 }
 restart_on_changes
+
 
 # Create Fleet Flow JS Listener Service
 create_fleet_flow_js_listener_service() {
