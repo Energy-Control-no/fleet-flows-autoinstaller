@@ -1,3 +1,12 @@
+## [0.1.7](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.6...v0.1.7) (2024-01-14)
+
+
+### Bug Fixes
+
+* log file location changed ([eaf192b](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/eaf192bac620487a07aeb7f869406d33f4349588))
+
+
+
 ## [0.1.6](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.5...v0.1.6) (2024-01-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * escaping variables ([c4de221](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/c4de221d4c7c805e399cc41a1184446b1421a7eb))
-
-
-
-## [0.1.2](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.1...v0.1.2) (2024-01-14)
-
-
-### Bug Fixes
-
-* escaping variables ([e9561fe](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/e9561feb5797de71e5ed8f9018005d609208ce08))
 
 
 
