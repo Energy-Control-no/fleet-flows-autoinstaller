@@ -147,6 +147,7 @@ restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
     sudo tee $RESTART_SCRIPT > /dev/null <<EOL
 
+#!/bin/bash
 # Define the project directory
 PROJECT_DIR=\$HOME/fleet-flows-js
 LOG_FILE="$HOME/restart_change_ffjs.log"
@@ -192,7 +193,7 @@ After=network.target
 Type=simple
 User=$(whoami)
 WorkingDirectory=/usr/local/bin/
-ExecStart=restart_change_ffjs.sh
+ExecStart=/usr/local/bin/restart_change_ffjs.sh
 Restart=on-failure
 
 [Install]
