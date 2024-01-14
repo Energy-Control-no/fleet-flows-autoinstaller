@@ -8,14 +8,14 @@ The Fleet Flows Autoinstaller is a powerful and easy-to-use script designed to s
 
 Before running the autoinstaller, ensure that you have:
 - An active internet connection
-- Your Airtable API Key
+- Your Airtable API Key with data.records:read & write scopes. For the METADATA base
 
 ## Installation
 
 To install and run the Fleet Flows Autoinstaller, execute the following command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flows-autoinstaller/main/auto-installer.bash | bash -s -- [Your Airtable API Key] 
+curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flows-autoinstaller/main/full-install.sh | bash -s -- [Your Airtable API Key] 
 ``` 
 ## Features
 

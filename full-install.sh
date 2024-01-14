@@ -7,18 +7,21 @@ if [ -z "$1" ]; then
 fi
 
 # Constants
+# Constants
+GIT_SERVER="ssh://git@fleet-flow-git.lizzardsolutions.com/home/git/git"
 AIRTABLE_API_KEY="$1"
+AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
+AIRTABLE_TABLE_NAME="Unipi"
 HOSTNAME=$(hostname)
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+BRANCH="main"
 # Update package lists
 
 check_airtable_api_key() {
-    local api_key=$1
-
     # Making a test request to Airtable
     local response=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
-        "https://api.airtable.com/v0/meta/bases" \
-        -H "Authorization: Bearer ${api_key}")
+        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}" \
+        -H "Authorization: Bearer${AIRTABLE_API_KEY}")
 
     # Check if the HTTP status code is 200 (OK)
     if [ "$response" -ne 200 ]; then
@@ -29,8 +32,7 @@ check_airtable_api_key() {
         # Continue with the rest of the script
     fi
 }
-
-check_airtable_api_key "$AIRTABLE_API_KEY"
+check_airtable_api_key 
 
 sudo apt update
 sudo apt upgrade
