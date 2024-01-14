@@ -70,7 +70,7 @@ create_systemd_service
 create_auto_update_job() {
     AUTO_UPDATER_SCRIPT="/usr/local/bin/auto_updater_ffjs.sh"
 
-    sudo tee $AUTO_UPDATER_SCRIPT > /dev/null <<EOL
+    sudo tee $AUTO_UPDATER_SCRIPT > /dev/null <<`EOL`
 #!/bin/bash
 
 # Set the project directory and backup directory
@@ -87,8 +87,8 @@ if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
     git fetch
 
     # Compare local HEAD and remote HEAD
-    LOCAL_SHA=$(git rev-parse HEAD)
-    REMOTE_SHA=$(git rev-parse origin/main)
+    LOCAL_SHA=\$(git rev-parse HEAD)
+    REMOTE_SHA=\$(git rev-parse origin/main)
 
     if [ "$LOCAL_SHA" != "$REMOTE_SHA" ]; then
         echo "Updating the project..."
@@ -96,32 +96,32 @@ if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
         # Backup specified files
         echo "Backing up files..."
         mkdir -p $BACKUP_DIR
-        for file in "${FILES_TO_BACKUP[@]}"; do
-            if [ -f "$file" ]; then
-                cp $file $BACKUP_DIR/
+        for file in "\${FILES_TO_BACKUP[@]}"; do
+            if [ -f "\$file" ]; then
+                cp \$file \$BACKUP_DIR/
             else
-                echo "Warning: File $file not found for backup."
+                echo "Warning: File \$file not found for backup."
             fi
         done
 
         # Delete the project directory
         echo "Deleting old project directory..."
         cd ..
-        rm -rf $PROJECT_DIR
+        rm -rf \$PROJECT_DIR
 
         # Clone the remote repository
         echo "Cloning the remote repository..."
-        git clone --single-branch --branch $BRANCH $REMOTE_REPO $PROJECT_DIR
+        git clone --single-branch --branch \$BRANCH \$REMOTE_REPO \$PROJECT_DIR
 
         # Restore the backed-up files
         echo "Restoring files..."
-        cd $PROJECT_DIR
+        cd \$PROJECT_DIR
         npm i 
-        for file in "${FILES_TO_BACKUP[@]}"; do
-            if [ -f "$BACKUP_DIR/$file" ]; then
-                cp $BACKUP_DIR/$file .
+        for file in "\${FILES_TO_BACKUP[@]}"; do
+            if [ -f "\$BACKUP_DIR/\$file" ]; then
+                cp \$BACKUP_DIR/\$file .
             else
-                echo "Warning: Backup of $file not found for restoration."
+                echo "Warning: Backup of \$file not found for restoration."
             fi
         done
 
@@ -130,7 +130,7 @@ if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
         echo "Project is already up to date."
     fi
 else
-    echo "Error: The directory $PROJECT_DIR is not a valid Git repository."
+    echo "Error: The directory \$PROJECT_DIR is not a valid Git repository."
 fi
 EOL
     sudo chmod +rx $AUTO_UPDATER_SCRIPT
