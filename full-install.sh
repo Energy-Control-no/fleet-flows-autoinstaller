@@ -170,7 +170,7 @@ clone_repository() {
 }
 
 # Clone repositories
-clone_repository "fleet-files" "main"
+clone_repository "fleet-files" ${BRANCH}
 clone_repository "fleet-flows-js" ${BRANCH}
 
 # Run npm install in fleet-flows-js
@@ -191,7 +191,7 @@ RETRY_TIME=5
 SCHEMA_FILE_PATH=$1/schema.yml
 NODE_RED_DIRECTORY=$HOME/
 CONFIGS_DIR=$HOME/fleet-files/config
-RESTART_COMMAND='sudo systemctl restart node-red.service'
+RESTART_COMMAND='cp -f $HOME/fleet-files/* $HOME/.node-red/ sudo systemctl restart node-red.service'
 EOL
 }
 
