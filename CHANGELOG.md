@@ -1,3 +1,12 @@
+## [0.1.6](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.5...v0.1.6) (2024-01-14)
+
+
+### Bug Fixes
+
+* variable missing ([027d89f](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/027d89f8c473c4ce02d93fc1c98fb66048805150))
+
+
+
 ## [0.1.5](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.4...v0.1.5) (2024-01-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * escaping variables ([e9561fe](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/e9561feb5797de71e5ed8f9018005d609208ce08))
-
-
-
-## [0.1.1](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.0...v0.1.1) (2024-01-13)
-
-
-### Bug Fixes
-
-* supplied action file to workflow ([252432b](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/252432b5476ebb69b02265146038b8f05966b696))
 
 
 
