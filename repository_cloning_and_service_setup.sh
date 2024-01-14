@@ -79,8 +79,8 @@ BACKUP_DIR=$HOME/fleet-flows-js.backup
 REMOTE_REPO=${GIT_SERVER}/fleet-flows-js.git
 FILES_TO_BACKUP=("schema.yml" ".env") # Add other files as needed
 BRANCH=${BRANCH}
-if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
-    cd $PROJECT_DIR
+if [ -d "\$PROJECT_DIR" ] && [ -d "\$PROJECT_DIR/.git" ]; then
+    cd \$PROJECT_DIR
     echo "Current Directory: $(pwd)"
 
     # Fetch the latest commits from the remote
@@ -90,12 +90,12 @@ if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
     LOCAL_SHA=\$(git rev-parse HEAD)
     REMOTE_SHA=\$(git rev-parse origin/main)
 
-    if [ "$LOCAL_SHA" != "$REMOTE_SHA" ]; then
+    if [ "\$LOCAL_SHA" != "\$REMOTE_SHA" ]; then
         echo "Updating the project..."
 
         # Backup specified files
         echo "Backing up files..."
-        mkdir -p $BACKUP_DIR
+        mkdir -p \$BACKUP_DIR
         for file in "\${FILES_TO_BACKUP[@]}"; do
             if [ -f "\$file" ]; then
                 cp \$file \$BACKUP_DIR/
@@ -151,21 +151,21 @@ restart_on_changes() {
 #!/bin/bash
 
 # Define the project directory
-PROJECT_DIR="$HOME/fleet-flows-js"
+PROJECT_DIR=\$HOME/fleet-flows-js"
 
 # List of files to monitor within the project directory
 FILES=("schema.yml" ".env")
 
 # Function to monitor changes and restart the service
 monitor_and_restart() {
-    echo "Monitoring files for changes..." >> "$LOG_FILE"
-    inotifywait -m -e modify -q "${FILES[@]/#/$PROJECT_DIR/}" | while read -r line; do
+    echo "Monitoring files for changes..." >> "\$LOG_FILE"
+    inotifywait -m -e modify -q "${\FILES[@]/#/\$PROJECT_DIR/}" | while read -r line; do
         if systemctl is-active --quiet fleet-flows-js.service; then
-            echo "File change detected: $line" >> "$LOG_FILE"
-            echo "Restarting the fleet-flows-js service..." >> "$LOG_FILE"
-            sudo systemctl restart fleet-flows-js.service >> "$LOG_FILE" 2>&1
+            echo "File change detected: \$line" >> "\$LOG_FILE"
+            echo "Restarting the fleet-flows-js service..." >> "\$LOG_FILE"
+            sudo systemctl restart fleet-flows-js.service >> "\$LOG_FILE" 2>&1
         else
-            echo "File change detected, but fleet-flows-js.service is not running." >> "$LOG_FILE"
+            echo "File change detected, but fleet-flows-js.service is not running." >> "\$LOG_FILE"
         fi
     done
 }
