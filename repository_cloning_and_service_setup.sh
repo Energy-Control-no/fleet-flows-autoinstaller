@@ -149,7 +149,7 @@ restart_on_changes() {
 
 # Define the project directory
 PROJECT_DIR=\$HOME/fleet-flows-js
-LOG_FILE="/usr/local/bin/frestart_change_ffjs.log"
+LOG_FILE="$HOME/restart_change_ffjs.log"
 
 # List of files to monitor within the project directory
 FILES=("schema.yml" ".env")
