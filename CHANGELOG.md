@@ -1,3 +1,12 @@
+## [0.1.10](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.9...v0.1.10) (2024-01-14)
+
+
+### Bug Fixes
+
+* systemd edit ([1ed0276](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/1ed02761fa0ccac23cbf1d0506fd28334e276ddd))
+
+
+
 ## [0.1.9](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.8...v0.1.9) (2024-01-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * variable missing ([027d89f](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/027d89f8c473c4ce02d93fc1c98fb66048805150))
-
-
-
-## [0.1.5](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/compare/v0.1.4...v0.1.5) (2024-01-14)
-
-
-### Bug Fixes
-
-* added directory when removing files ([b7bd53e](https://github.com/Energy-Control-no/fleet-flow-autoinstaller/commit/b7bd53e349de56b2193a0f0e098ca3c27c4166a1))
 
 
 
