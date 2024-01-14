@@ -146,8 +146,9 @@ create_auto_update_job
 restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
     sudo tee $RESTART_SCRIPT > /dev/null <<EOL
-
 #!/bin/bash
+
+echo "Listening..."
 # Define the project directory
 PROJECT_DIR=\$HOME/fleet-flows-js
 LOG_FILE="$HOME/restart_change_ffjs.log"
@@ -195,6 +196,8 @@ User=$(whoami)
 WorkingDirectory=/usr/local/bin/
 ExecStart=/usr/local/bin/restart_change_ffjs.sh
 Restart=on-failure
+RestartSec=5
+StartLimitInterval=60s
 
 [Install]
 WantedBy=multi-user.target
