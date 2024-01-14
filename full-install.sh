@@ -321,7 +321,7 @@ monitor_and_restart() {
             sudo systemctl restart fleet-flows-js.service >> "\$LOG_FILE" 2>&1
         else
             echo "File change detected, but fleet-flows-js.service is not running." >> "\$LOG_FILE"
-        figit pull 
+        fi
     done
 }
 
