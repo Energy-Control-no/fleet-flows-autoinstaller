@@ -1,3 +1,12 @@
+## [0.2.4](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.3...v0.2.4) (2024-01-14)
+
+
+### Bug Fixes
+
+* small changes ([a83d1bd](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/a83d1bd1f6ec38c18d2d0524794b4054996fd610))
+
+
+
 ## [0.2.3](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.2...v0.2.3) (2024-01-14)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * added a one script for install ([eecb6d3](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/eecb6d39de92afe782bbc2b21581e2a464c1f913))
-
-
-
-## [0.1.10](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.1.9...v0.1.10) (2024-01-14)
-
-
-### Bug Fixes
-
-* systemd edit ([1ed0276](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/1ed02761fa0ccac23cbf1d0506fd28334e276ddd))
 
 
 
