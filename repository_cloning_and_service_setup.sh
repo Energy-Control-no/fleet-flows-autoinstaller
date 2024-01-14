@@ -3,7 +3,7 @@
 GIT_SERVER="ssh://git@fleet-flow-git.lizzardsolutions.com/home/git/git"
 BRANCH="main"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
-
+cd $HOME
 # Function to clone Git repositories
 clone_repository() {
     local repo_name=$1
@@ -147,7 +147,9 @@ restart_on_changes() {
     RESTART_SCRIPT="/usr/local/bin/restart_change_ffjs.sh"
     LOG_FILE="/usr/local/bin/frestart_change_ffjs.log"
 
+ 
     sudo tee $RESTART_SCRIPT > /dev/null <<EOL
+    
 #!/bin/bash
 
 # Define the project directory
@@ -174,8 +176,8 @@ monitor_and_restart() {
 monitor_and_restart
 
 EOL
-    sudo chmod +rx $RESTART_SCRIPT
 
+    sudo chmod +rx $RESTART_SCRIPT
     echo "Restart Script is setup $RESTART_SCRIPT"
 }
 restart_on_changes
