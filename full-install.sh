@@ -1,8 +1,24 @@
 #!/bin/bash
 # Check if Airtable API key is provided as an argument
+
+cecho(){
+    RED="\033[0;31m"
+    GREEN="\033[0;32m"  # <-- [0 means not bold
+    YELLOW="\033[1;33m" # <-- [1 means bold
+    CYAN="\033[1;36m"
+    Error="\033[0;31m"
+    # ... Add more colors if you like
+
+    NC="\033[0m" # No Color
+
+    # printf "${(P)1}${2} ${NC}\n" # <-- zsh
+    printf "${!1}${2} ${NC}\n" # <-- bash
+}
+
+
 if [ -z "$1" ]; then
-    echo "Error: No Airtable API key provided."
-    echo "Usage: $0 <AIRTABLE_API_KEY>"
+    cecho "RED" "Error: No Airtable API key provided."
+    cecho "CYAN" "Usage: $0 <AIRTABLE_API_KEY>"
     exit 1
 fi
 
@@ -25,10 +41,10 @@ check_airtable_api_key() {
 
     # Check if the HTTP status code is 200 (OK)
     if [ "$response" -ne 200 ]; then
-        echo "Invalid API key. Stopping the script."
+        cecho "RED" "Invalid API key. Stopping the script."
         exit 1
     else
-        echo "API key is valid."
+        cecho "RED" "API key is valid."
         # Continue with the rest of the script
     fi
 }
@@ -40,10 +56,10 @@ sudo apt upgrade
 # Check and install required packages
 ensure_installed() {
     if ! command -v $1 &> /dev/null; then
-        echo "Installing $1..."
+        cecho "YELLOW" "Installing $1..."
         sudo apt install -y $1
     else
-        echo "$1 is already installed."
+        cecho "YELLOW" "$1 is already installed."
     fi
 }
 
@@ -51,7 +67,7 @@ ensure_installed() {
 sudo npm install -g npm@latest
 # Check if 'n' is installed
 if ! command -v n >/dev/null 2>&1; then
-    echo "n is not installed. Installing n..."
+    cecho "YELLOW" "n is not installed. Installing n..."
     # Install n (Node.js version manager)
     sudo npm install -g n
 fi
@@ -60,7 +76,7 @@ fi
 sudo n lts
 sudo n latest
 
-echo "Node.js and npm are updated to the latest versions."
+cecho "GREEN" "Node.js and npm are updated to the latest versions."
 
 # Install Node.js, npm, and Node-RED
 ensure_installed inotify-tools
@@ -81,10 +97,10 @@ update_ssh_key_in_airtable() {
     echo "Fetched record id ?${record_id}?"
     if [ -n "$record_id" ]; then
         # Update existing record
-        echo "Updating Existing Record"
+        cecho "GREEN" "Updating Existing Record"
         update_airtable_record "$record_id" "$pubkey"
     else
-        echo "Create new Record"
+        cecho "GREEN" "Create new Record"
         # Create new record
         create_airtable_record "$HOSTNAME" "$pubkey"
     fi
@@ -100,7 +116,7 @@ fetch_airtable_record_id_by_hostname() {
         -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
         -H "Content-Type: application/json")
 
-    echo $(echo $response | jq -r '.records[0].id // empty')
+    #echo $(echo $response | jq -r '.records[0].id // empty')
 }
 
 update_airtable_record() {
@@ -116,8 +132,8 @@ update_airtable_record() {
         -H "Content-Type: application/json" \
         -d "$data")
 
-    echo "Response from Airtable:"
-    echo "$response"
+    #echo "Response from Airtable:"
+    #echo "$response"
 }
 
 create_airtable_record() {
@@ -135,13 +151,13 @@ create_airtable_record() {
         -H "Content-Type: application/json" \
         -d "$data")
 
-    echo "Response from Airtable:"
-    echo "$response"
+    #echo "Response from Airtable:"
+    #echo "$response"
 }
 
 # Check and generate SSH key
 if [ ! -f "$SSH_KEY_PATH" ]; then
-    echo "Generating new SSH key..."
+    cecho "GREEN" "Generating new SSH key..."
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 check_git_access() {
@@ -149,7 +165,7 @@ check_git_access() {
 }
 # Check Git access and update Airtable if necessary
 if ! check_git_access; then
-    echo "Git server access failed. Updating SSH key in Airtable..."
+    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
     update_ssh_key_in_airtable
 fi
 
@@ -164,7 +180,7 @@ clone_repository() {
     local repo_name=$1
     local branch=$2
     until git clone --single-branch --branch ${branch} ${GIT_SERVER}/${repo_name}.git; do
-        echo "Git clone of $repo_name failed. Retrying..."
+        cecho "YELLOW" "Git clone of $repo_name failed. Retrying..."
         sleep 5
     done
 }
@@ -292,7 +308,7 @@ EOL
     LOG_FILE="/var/log/auto_updater_ffjs.log"
     # Setup the cronjob for auto-update
 (crontab -l 2>/dev/null; echo "0 * * * * $AUTO_UPDATER_SCRIPT >> $LOG_FILE 2>&1") | crontab -
-    echo "auto-update is setup $AUTO_UPDATER_SCRIPT"
+    cecho "GREEN" "auto-update is setup $AUTO_UPDATER_SCRIPT"
 
 }
 create_auto_update_job
@@ -331,7 +347,7 @@ monitor_and_restart
 EOL
 
     sudo chmod +rx $RESTART_SCRIPT
-    echo "Restart Script is setup $RESTART_SCRIPT"
+    cecho "GREEN" "Restart Script is setup $RESTART_SCRIPT"
 }
 restart_on_changes
 
@@ -362,6 +378,6 @@ EOL
     sudo systemctl enable fleet-flows-js-listener
     sudo systemctl start fleet-flows-js-listener
 
-    echo "Fleet Flows JS Listener Service is setup and started. "
+    cecho "GREEN" "Fleet Flows JS Listener Service is setup and started. "
 }
 create_fleet_flow_js_listener_service
