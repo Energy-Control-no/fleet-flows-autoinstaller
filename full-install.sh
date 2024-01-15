@@ -44,7 +44,7 @@ check_airtable_api_key() {
         cecho "RED" "Invalid API key. Stopping the script."
         exit 1
     else
-        cecho "RED" "API key is valid."
+        cecho "GREEN" "API key is valid."
         # Continue with the rest of the script
     fi
 }
@@ -73,8 +73,8 @@ if ! command -v n >/dev/null 2>&1; then
 fi
 
 # Update Node.js to the latest version using 'n'
-sudo n lts
-sudo n latest
+sudo n 20.11
+
 
 cecho "GREEN" "Node.js and npm are updated to the latest versions."
 
@@ -207,7 +207,7 @@ RETRY_TIME=5
 SCHEMA_FILE_PATH=$1/schema.yml
 NODE_RED_DIRECTORY=$HOME/
 CONFIGS_DIR=$HOME/fleet-files/config
-RESTART_COMMAND='cp -f $HOME/fleet-files/* $HOME/.node-red/ sudo systemctl restart node-red.service'
+RESTART_COMMAND='cp -f $HOME/fleet-files/* $HOME/.node-red/ && sudo systemctl restart node-red.service'
 EOL
 }
 
@@ -227,6 +227,7 @@ WorkingDirectory=$(realpath ./fleet-flows-js)
 Restart=always
 User=$(whoami)
 
+KillSignal=SIGINT
 [Install]
 WantedBy=multi-user.target
 EOL
