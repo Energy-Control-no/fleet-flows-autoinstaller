@@ -87,7 +87,7 @@ ensure_installed jq
 ensure_installed nano
 
 if ! command -v node-red &> /dev/null; then
-    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
+    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node20  
 fi
 
 # Function to update SSH key in Airtable
