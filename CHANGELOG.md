@@ -1,3 +1,12 @@
+## [0.2.11](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.10...v0.2.11) (2024-01-16)
+
+
+### Bug Fixes
+
+* API key parsing fix, flag to use is -k ([b63a4a0](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/b63a4a0b93498759807e49efa1ab0524af0cb8e5))
+
+
+
 ## [0.2.10](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.9...v0.2.10) (2024-01-16)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * default env change. ([47c8c0e](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/47c8c0e03324b6efd011b20acad6485453e5152b))
-
-
-
-## [0.2.6](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.5...v0.2.6) (2024-01-14)
-
-
-### Bug Fixes
-
-* final ([c3805d2](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/c3805d29149ea52e0226f32ba6f029ab956ca79e))
 
 
 
