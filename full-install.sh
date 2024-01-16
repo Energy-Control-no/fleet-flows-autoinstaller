@@ -2,6 +2,7 @@
 # Check if Airtable API key is provided as an argument
 debug=false
 noupdate=true
+AIRTABLE_API_KEY=""
 cecho(){
     RED="\033[0;31m"
     GREEN="\033[0;32m"  # <-- [0 means not bold
@@ -27,12 +28,17 @@ while [ "$#" -gt 0 ]; do
       noupdate=false
       shift
       ;;
+    -k|--key)
+      AIRTABLE_API_KEY="$2"
+      shift 2
+      ;;
     *)
       echo "Error: Unsupported flag $1" >&2
       exit 1
       ;;
   esac
 done
+
 
 debug_echo() {
     if [ "$debug" = true ]; then
@@ -42,12 +48,12 @@ debug_echo() {
 debug_echo "DEBUG" "Debugging "
 
 
-
-if [ -z "$1" ]; then
+if [ -z "$AIRTABLE_API_KEY" ]; then
     cecho "RED" "Error: No Airtable API key provided."
-    cecho "CYAN" "Usage: $0 <AIRTABLE_API_KEY>"
+    cecho "CYAN" "Usage: $0 -k <AIRTABLE_API_KEY>"
     exit 1
 fi
+
 
 # Constants
 # Constants
