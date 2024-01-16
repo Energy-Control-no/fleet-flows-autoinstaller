@@ -1,12 +1,14 @@
 #!/bin/bash
 # Check if Airtable API key is provided as an argument
-
+debug=false
+noupdate=true
 cecho(){
     RED="\033[0;31m"
     GREEN="\033[0;32m"  # <-- [0 means not bold
     YELLOW="\033[1;33m" # <-- [1 means bold
     CYAN="\033[1;36m"
     Error="\033[0;31m"
+    DEBUG="\033[0;31;47m"
     # ... Add more colors if you like
 
     NC="\033[0m" # No Color
@@ -14,6 +16,31 @@ cecho(){
     # printf "${(P)1}${2} ${NC}\n" # <-- zsh
     printf "${!1}${2} ${NC}\n" # <-- bash
 }
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -d|--debug)
+      debug=true
+      shift
+      ;;
+    -nou|--no-update)
+      noupdate=false
+      shift
+      ;;
+    *)
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+debug_echo() {
+    if [ "$debug" = true ]; then
+        cecho "$1" "$2"
+    fi
+}
+debug_echo "DEBUG" "Debugging "
+
 
 
 if [ -z "$1" ]; then
@@ -34,6 +61,7 @@ BRANCH="main"
 # Update package lists
 
 check_airtable_api_key() {
+    debug_echo "DEBUG" "check_airtable_api_key called"
     # Making a test request to Airtable
     local response=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
         "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}" \
@@ -41,6 +69,7 @@ check_airtable_api_key() {
 
     # Check if the HTTP status code is 200 (OK)
     if [ "$response" -ne 200 ]; then
+
         cecho "RED" "Invalid API key. Stopping the script."
         exit 1
     else
@@ -48,13 +77,21 @@ check_airtable_api_key() {
         # Continue with the rest of the script
     fi
 }
-check_airtable_api_key 
 
-sudo apt update
-sudo apt upgrade
+debug_echo "DEBUG" "noupdate flasg is: $noupdate"
+if [ "$noupdate" = true ]; then
+    debug_echo "DEBUG" "running update"
+    sudo apt update
+    debug_echo "DEBUG" "running upgrade"
+    sudo apt upgrade
+    fi
+
+debug_echo "DEBUG" "calling check_airtable_api_key"
+check_airtable_api_key 
 
 # Check and install required packages
 ensure_installed() {
+    
     if ! command -v $1 &> /dev/null; then
         cecho "YELLOW" "Installing $1..."
         sudo apt install -y $1
@@ -62,10 +99,11 @@ ensure_installed() {
         cecho "YELLOW" "$1 is already installed."
     fi
 }
-
+debug_echo "DEBUG" "updating npm to the latest version"
 # Update npm to the latest version
 sudo npm install -g npm@latest
 # Check if 'n' is installed
+debug_echo "DEBUG" "checking if n is installed"
 if ! command -v n >/dev/null 2>&1; then
     cecho "YELLOW" "n is not installed. Installing n..."
     # Install n (Node.js version manager)
@@ -73,7 +111,8 @@ if ! command -v n >/dev/null 2>&1; then
 fi
 
 # Update Node.js to the latest version using 'n'
-sudo n 20.11
+debug_echo "DEBUG" " installing specific version of node"
+sudo n 16.20.2
 
 
 cecho "GREEN" "Node.js and npm are updated to the latest versions."
@@ -85,28 +124,28 @@ ensure_installed npm
 ensure_installed git
 ensure_installed jq
 ensure_installed nano
-
+debug_echo "DEBUG" "checking if node-red is installed"
 if ! command -v node-red &> /dev/null; then
     bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node20  
 fi
 
-# Function to update SSH key in Airtable
-update_ssh_key_in_airtable() {
-    local pubkey=$(cat $SSH_KEY_PATH.pub)
-    local record_id=$(fetch_airtable_record_id_by_hostname "$HOSTNAME")
-    echo "Fetched record id ?${record_id}?"
-    if [ -n "$record_id" ]; then
-        # Update existing record
-        cecho "GREEN" "Updating Existing Record"
-        update_airtable_record "$record_id" "$pubkey"
-    else
-        cecho "GREEN" "Create new Record"
-        # Create new record
-        create_airtable_record "$HOSTNAME" "$pubkey"
-    fi
+# Check and generate SSH key
+if [ ! -f "$SSH_KEY_PATH" ]; then
+    cecho "GREEN" "Generating new SSH key..."
+    ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
+fi
+check_git_access() {
+    ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 | grep -q "successfully authenticated"
 }
+# Check Git access and update Airtable if necessary
+if ! check_git_access; then
+    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
+    update_ssh_key_in_airtable
+fi
+
 
 fetch_airtable_record_id_by_hostname() {
+     debug_echo "DEBUG" "fetch_airtable_record_id_by_hostname called"
     local hostname=$1
     # Encoding the formula: {Device id} = 'hostname'
     local encodedFormula=$(printf "{Device id} = '%s'" "$hostname" | jq -sRr @uri)
@@ -120,6 +159,8 @@ fetch_airtable_record_id_by_hostname() {
 }
 
 update_airtable_record() {
+    debug_echo "DEBUG" "update_airtable_record called"
+
     local record_id=$1
     local ssh_key=$2
     local data=$(jq -n \
@@ -154,20 +195,26 @@ create_airtable_record() {
     #echo "Response from Airtable:"
     #echo "$response"
 }
-
-# Check and generate SSH key
-if [ ! -f "$SSH_KEY_PATH" ]; then
-    cecho "GREEN" "Generating new SSH key..."
-    ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
-fi
-check_git_access() {
-    ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 | grep -q "successfully authenticated"
+# Function to update SSH key in Airtable
+update_ssh_key_in_airtable() {
+    debug_echo "DEBUG" "update_ssh_key_in_airtable called"
+    local pubkey=$(cat $SSH_KEY_PATH.pub)
+    local record_id=$(fetch_airtable_record_id_by_hostname "$HOSTNAME")
+    debug_echo "DEBUG" "$pubkey "
+    debug_echo "DEBUG" "$record_id "
+    echo "Fetched record id ?${record_id}?"
+    if [ -n "$record_id" ]; then
+        # Update existing record
+        cecho "GREEN" "Updating Existing Record"
+        update_airtable_record "$record_id" "$pubkey"
+    else
+        cecho "GREEN" "Create new Record"
+        # Create new record
+        create_airtable_record "$HOSTNAME" "$pubkey"
+    fi
 }
-# Check Git access and update Airtable if necessary
-if ! check_git_access; then
-    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
-    update_ssh_key_in_airtable
-fi
+
+
 
 
 # Constants
@@ -207,7 +254,7 @@ RETRY_TIME=5
 SCHEMA_FILE_PATH=$1/schema.yml
 NODE_RED_DIRECTORY=$HOME/
 CONFIGS_DIR=$HOME/fleet-files/config
-RESTART_COMMAND='cp -f $HOME/fleet-files/* $HOME/.node-red/ && sudo systemctl restart node-red.service'
+RESTART_COMMAND='find  $HOME/fleet-files -maxdepth 1 -type f -exec cp {}  $HOME//.node-red/ \ && sudo systemctl restart nodered'
 EOL
 }
 
