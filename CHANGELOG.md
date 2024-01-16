@@ -1,3 +1,12 @@
+## [0.2.13](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.12...v0.2.13) (2024-01-16)
+
+
+### Bug Fixes
+
+* small changes ([7160724](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/7160724f95051549c17a8455d7b519a53c6bf980))
+
+
+
 ## [0.2.12](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.11...v0.2.12) (2024-01-16)
 
 
@@ -31,17 +40,6 @@
 ### Bug Fixes
 
 * color correction & .env fix ([5eca617](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/5eca617d4189db8be2e1bb9a50591d950d74fae5))
-
-
-
-## [0.2.8](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.7...v0.2.8) (2024-01-15)
-
-
-### Bug Fixes
-
-* added colors for easier monitoring ([cbcfe26](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/cbcfe266c34e131c034416e8f18505e1889533bb))
-* auto node-red install ([88c7ba0](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/88c7ba02f999af9df71e3c785d736f3a811ed010))
-* small error ([f405bc3](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/f405bc3cd92b298bc6705f58bc7baddb9ada8e03))
 
 
 
