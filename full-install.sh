@@ -143,6 +143,26 @@ check_git_access() {
     ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 | grep -q "successfully authenticated"
 }
 # Check Git access and update Airtable if necessary
+update_ssh_key_in_airtable() {
+    debug_echo "DEBUG" "update_ssh_key_in_airtable called"
+    local pubkey=$(cat $SSH_KEY_PATH.pub)
+    local record_id=$(fetch_airtable_record_id_by_hostname "$HOSTNAME")
+    debug_echo "DEBUG" "$pubkey "
+    debug_echo "DEBUG" "$record_id "
+    echo "Fetched record id ?${record_id}?"
+    if [ -n "$record_id" ]; then
+        # Update existing record
+        cecho "GREEN" "Updating Existing Record"
+        update_airtable_record "$record_id" "$pubkey"
+    else
+        cecho "GREEN" "Create new Record"
+        # Create new record
+        create_airtable_record "$HOSTNAME" "$pubkey"
+    fi
+}
+
+
+
 if ! check_git_access; then
     cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
     update_ssh_key_in_airtable
@@ -201,24 +221,6 @@ create_airtable_record() {
     #echo "$response"
 }
 # Function to update SSH key in Airtable
-update_ssh_key_in_airtable() {
-    debug_echo "DEBUG" "update_ssh_key_in_airtable called"
-    local pubkey=$(cat $SSH_KEY_PATH.pub)
-    local record_id=$(fetch_airtable_record_id_by_hostname "$HOSTNAME")
-    debug_echo "DEBUG" "$pubkey "
-    debug_echo "DEBUG" "$record_id "
-    echo "Fetched record id ?${record_id}?"
-    if [ -n "$record_id" ]; then
-        # Update existing record
-        cecho "GREEN" "Updating Existing Record"
-        update_airtable_record "$record_id" "$pubkey"
-    else
-        cecho "GREEN" "Create new Record"
-        # Create new record
-        create_airtable_record "$HOSTNAME" "$pubkey"
-    fi
-}
-
 
 
 
