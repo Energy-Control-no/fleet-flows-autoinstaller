@@ -73,7 +73,7 @@ if ! command -v n >/dev/null 2>&1; then
 fi
 
 # Update Node.js to the latest version using 'n'
-sudo n 20.11
+sudo n 16.20.2
 
 
 cecho "GREEN" "Node.js and npm are updated to the latest versions."
@@ -87,7 +87,7 @@ ensure_installed jq
 ensure_installed nano
 
 if ! command -v node-red &> /dev/null; then
-    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node20  
+    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node16  
 fi
 
 # Function to update SSH key in Airtable
