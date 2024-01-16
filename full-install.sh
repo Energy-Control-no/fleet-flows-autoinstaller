@@ -142,6 +142,43 @@ fi
 check_git_access() {
     ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 | grep -q "successfully authenticated"
 }
+create_airtable_record() {
+    local hostname=$1
+    local ssh_key=$2
+
+    local data=$(jq -n \
+                    --arg hostname "$hostname" \
+                    --arg sshKey "$ssh_key" \
+                    '{records: [{fields: {"Device id": $hostname, "SSH Public Key": $sshKey}}]}')
+
+    local response=$(curl -X POST \
+        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}" \
+        -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
+        -H "Content-Type: application/json" \
+        -d "$data")
+
+    #echo "Response from Airtable:"
+    #echo "$response"
+}
+update_airtable_record() {
+    debug_echo "DEBUG" "update_airtable_record called"
+
+    local record_id=$1
+    local ssh_key=$2
+    local data=$(jq -n \
+                    --arg sshKey "$ssh_key" \
+                    '{fields: {"SSH Public Key": $sshKey}}')
+
+    local response=$(curl -X PATCH \
+        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}/${record_id}" \
+        -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
+        -H "Content-Type: application/json" \
+        -d "$data")
+
+    #echo "Response from Airtable:"
+    #echo "$response"
+}
+
 # Check Git access and update Airtable if necessary
 update_ssh_key_in_airtable() {
     debug_echo "DEBUG" "update_ssh_key_in_airtable called"
@@ -183,44 +220,9 @@ fetch_airtable_record_id_by_hostname() {
     #echo $(echo $response | jq -r '.records[0].id // empty')
 }
 
-update_airtable_record() {
-    debug_echo "DEBUG" "update_airtable_record called"
 
-    local record_id=$1
-    local ssh_key=$2
-    local data=$(jq -n \
-                    --arg sshKey "$ssh_key" \
-                    '{fields: {"SSH Public Key": $sshKey}}')
 
-    local response=$(curl -X PATCH \
-        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}/${record_id}" \
-        -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
-        -H "Content-Type: application/json" \
-        -d "$data")
 
-    #echo "Response from Airtable:"
-    #echo "$response"
-}
-
-create_airtable_record() {
-    local hostname=$1
-    local ssh_key=$2
-
-    local data=$(jq -n \
-                    --arg hostname "$hostname" \
-                    --arg sshKey "$ssh_key" \
-                    '{records: [{fields: {"Device id": $hostname, "SSH Public Key": $sshKey}}]}')
-
-    local response=$(curl -X POST \
-        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}" \
-        -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
-        -H "Content-Type: application/json" \
-        -d "$data")
-
-    #echo "Response from Airtable:"
-    #echo "$response"
-}
-# Function to update SSH key in Airtable
 
 
 
