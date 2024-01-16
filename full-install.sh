@@ -179,6 +179,21 @@ update_airtable_record() {
     #echo "$response"
 }
 
+
+fetch_airtable_record_id_by_hostname() {
+     debug_echo "DEBUG" "fetch_airtable_record_id_by_hostname called"
+    local hostname=$1
+    # Encoding the formula: {Device id} = 'hostname'
+    local encodedFormula=$(printf "{Device id} = '%s'" "$hostname" | jq -sRr @uri)
+
+    local response=$(curl -X GET \
+        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=${encodedFormula}" \
+        -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
+        -H "Content-Type: application/json")
+
+    #echo $(echo $response | jq -r '.records[0].id // empty')
+}
+
 # Check Git access and update Airtable if necessary
 update_ssh_key_in_airtable() {
     debug_echo "DEBUG" "update_ssh_key_in_airtable called"
@@ -204,21 +219,6 @@ if ! check_git_access; then
     cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
     update_ssh_key_in_airtable
 fi
-
-
-fetch_airtable_record_id_by_hostname() {
-     debug_echo "DEBUG" "fetch_airtable_record_id_by_hostname called"
-    local hostname=$1
-    # Encoding the formula: {Device id} = 'hostname'
-    local encodedFormula=$(printf "{Device id} = '%s'" "$hostname" | jq -sRr @uri)
-
-    local response=$(curl -X GET \
-        "https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=${encodedFormula}" \
-        -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
-        -H "Content-Type: application/json")
-
-    #echo $(echo $response | jq -r '.records[0].id // empty')
-}
 
 
 
