@@ -1,3 +1,12 @@
+## [0.2.21](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.20...v0.2.21) (2024-01-17)
+
+
+### Bug Fixes
+
+* looking for bugs ([c82ea04](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/c82ea04277eb245730cc4fdc83df4fb85355aff7))
+
+
+
 ## [0.2.20](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.19...v0.2.20) (2024-01-17)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * checking if node-red is installed ([7e113c0](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/7e113c0cc1a320e36dfb20327ee6ff378b7a6d3b))
-
-
-
-## [0.2.16](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.15...v0.2.16) (2024-01-17)
-
-
-### Bug Fixes
-
-* echo enabled ([f5b5027](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/f5b502758a1098fc9f7c961afef46623431387eb))
 
 
 
