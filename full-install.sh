@@ -57,7 +57,7 @@ fi
 
 # Constants
 # Constants
-GIT_SERVER="ssh://git@fleet-flows-git.lizzardsolutions.com/"
+GIT_SERVER="ssh://git@fleet-flows-git.lizzardsolutions.com"
 AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
 AIRTABLE_TABLE_NAME="Unipi"
 HOSTNAME=$(hostname)
