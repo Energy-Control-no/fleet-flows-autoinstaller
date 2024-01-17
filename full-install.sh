@@ -123,9 +123,8 @@ ensure_installed git
 ensure_installed jq
 ensure_installed nano
 
-debug_echo "DEBUG" "checking if n is installed"
 
-debug_echo "DEBUG" "checking if node-red is installed"
+debug_echo "DEBUG" "checking if n is installed"
 if [ -f "/usr/local/bin/n" ]; then
 debug_echo "DEBUG" "installed /usr/local/bin/n"
 elif [ -f "/usr/bin/n" ]; then
