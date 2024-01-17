@@ -153,7 +153,6 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 check_git_access() {
-    
     if timeout 10  ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 "echo "Testing connection from $(hostname)" && exit"; then
         echo "SSH access to Git server verified."
         return 0
@@ -238,12 +237,7 @@ if ! check_git_access; then
     cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
     update_ssh_key_in_airtable
 fi
-
-
-
-
-
-
+ debug_echo "DEBUG" "misterious exit?"
 
 # Constants
 GIT_SERVER="ssh://git@fleet-flow-git.lizzardsolutions.com/home/git/git"
@@ -251,6 +245,7 @@ BRANCH="main"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 cd $HOME
 # Function to clone Git repositories
+ debug_echo "DEBUG" "cloning repository"
 clone_repository() {
     local repo_name=$1
     local branch=$2
