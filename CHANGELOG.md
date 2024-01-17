@@ -1,3 +1,12 @@
+## [0.2.32](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.31...v0.2.32) (2024-01-17)
+
+
+### Bug Fixes
+
+* if/elif fix ([ab4e9de](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/ab4e9def725829e919b7149641f9ab0394b6b667))
+
+
+
 ## [0.2.31](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.30...v0.2.31) (2024-01-17)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * removed timeout ([f0c5765](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/f0c5765b51b1520a183715a96e83289e1c498b6f))
-
-
-
-## [0.2.27](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.26...v0.2.27) (2024-01-17)
-
-
-### Bug Fixes
-
-* ssh command ([82df6b1](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/82df6b107c34b22f04e65a477439bcec7a9d6f5c))
 
 
 
