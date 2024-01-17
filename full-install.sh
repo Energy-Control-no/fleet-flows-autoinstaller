@@ -106,33 +106,43 @@ ensure_installed() {
 }
 debug_echo "DEBUG" "updating npm to the latest version"
 # Update npm to the latest version
-sudo npm install -g npm@latest
+
 # Check if 'n' is installed
-debug_echo "DEBUG" "checking if n is installed"
-if ! command -v n >/dev/null 2>&1; then
-    cecho "YELLOW" "n is not installed. Installing n..."
-    # Install n (Node.js version manager)
-    sudo npm install -g n
-fi
+
 
 # Update Node.js to the latest version using 'n'
 debug_echo "DEBUG" " installing specific version of node"
-sudo n 16.20.2
+
 
 
 cecho "GREEN" "Node.js and npm are updated to the latest versions."
 
 # Install Node.js, npm, and Node-RED
 ensure_installed inotify-tools
-ensure_installed node
-ensure_installed npm
 ensure_installed git
 ensure_installed jq
 ensure_installed nano
-debug_echo "DEBUG" "checking if node-red is installed"
-if ! command -v node-red &> /dev/null; then
-    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node16  
+
+
+if ! command -v n >/dev/null 2>&1; then
+    cecho "YELLOW" "n is not installed. Installing n..."
+    # Install n (Node.js version manager)
+    sudo npm install -g n
 fi
+
+sudo n install 16.2
+
+debug_echo "DEBUG" "checking if node-red is installed"
+if [ -f "/usr/local/bin/node-red" ]; then
+debug_echo "DEBUG" "installed /usr/local/bin/node-red"
+elif [ -f "/usr/bin/node-red" ]; then
+debug_echo "DEBUG" "installed /usr/bin/node-red"
+else
+    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node16  
+
+fi
+
+debug_echo "DEBUG" "checking if n is installed"
 
 # Check and generate SSH key
 if [ ! -f "$SSH_KEY_PATH" ]; then
