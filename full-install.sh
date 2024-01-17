@@ -233,6 +233,7 @@ update_ssh_key_in_airtable() {
 
  debug_echo "DEBUG" "checking git access"
  check_git_access
+ debug_echo "DEBUG" "Git access successfull"
 
 # Constants
 GIT_SERVER="ssh://git@fleet-flow-git.lizzardsolutions.com/home/git/git"
