@@ -1,3 +1,12 @@
+## [0.2.31](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.30...v0.2.31) (2024-01-17)
+
+
+### Bug Fixes
+
+* cecho was missing color ([5bad354](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/5bad3543efa3449e69db28ed4166f022173a3d15))
+
+
+
 ## [0.2.30](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.29...v0.2.30) (2024-01-17)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * ssh command ([82df6b1](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/82df6b107c34b22f04e65a477439bcec7a9d6f5c))
-
-
-
-## [0.2.26](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.25...v0.2.26) (2024-01-17)
-
-
-### Bug Fixes
-
-* ssh configuring ([a247ede](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/a247ede3df39d051204542c9855edf92031f9476))
 
 
 
