@@ -123,8 +123,14 @@ ensure_installed git
 ensure_installed jq
 ensure_installed nano
 
+debug_echo "DEBUG" "checking if n is installed"
 
-if ! command -v n >/dev/null 2>&1; then
+debug_echo "DEBUG" "checking if node-red is installed"
+if [ -f "/usr/local/bin/n" ]; then
+debug_echo "DEBUG" "installed /usr/local/bin/n"
+elif [ -f "/usr/bin/n" ]; then
+debug_echo "DEBUG" "installed /usr/bin/n"
+else
     cecho "YELLOW" "n is not installed. Installing n..."
     # Install n (Node.js version manager)
     sudo npm install -g n
@@ -139,13 +145,12 @@ elif [ -f "/usr/bin/node-red" ]; then
 debug_echo "DEBUG" "installed /usr/bin/node-red"
 else
     bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node16  
-
 fi
 
-debug_echo "DEBUG" "checking if n is installed"
 
 # Check and generate SSH key
 if [ ! -f "$SSH_KEY_PATH" ]; then
+
     cecho "GREEN" "Generating new SSH key..."
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
