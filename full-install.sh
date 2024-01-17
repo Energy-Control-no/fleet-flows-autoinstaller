@@ -154,12 +154,15 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
 fi
 
 check_git_access() {
-    ssh -q ssh://git@fleet-flows-git.lizzardsolutions.com "echo Hello from $(hostname)"
-    if [ $? -ne 0 ] ; then
-    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
-    update_ssh_key_in_airtable
-    else
+        local server_address=$1
+    local username=$2
+
+    # Attempt to SSH into the server with a timeout of 10 seconds
+    if ssh -o ConnectTimeout=10 -q $GIT_SERVER exit; then
       cecho "BLUE" "SSH access to Git server verified."
+    else
+        cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
+        update_ssh_key_in_airtable
     fi
 }
 create_airtable_record() {
