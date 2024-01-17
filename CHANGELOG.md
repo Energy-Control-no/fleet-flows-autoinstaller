@@ -1,3 +1,12 @@
+## [0.2.35](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.34...v0.2.35) (2024-01-17)
+
+
+### Bug Fixes
+
+* program exiting randomly ([a7e0fcc](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/a7e0fcc031011e8c8d094f0b201b3d73da0c05c8))
+
+
+
 ## [0.2.34](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.33...v0.2.34) (2024-01-17)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * cecho was missing color ([5bad354](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/5bad3543efa3449e69db28ed4166f022173a3d15))
-
-
-
-## [0.2.30](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.29...v0.2.30) (2024-01-17)
-
-
-### Bug Fixes
-
-* ssh compare finished ([84a698f](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/84a698fed28bcbcd8c3d93c572194cfb40c417d0))
 
 
 
