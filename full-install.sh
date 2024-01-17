@@ -153,7 +153,7 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 check_git_access() {
-    if ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 "echo 'Testing connection from $(hostname)'"; then
+    if ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 "echo Testing connection from $(hostname)"; then
         echo "SSH access to Git server verified."        
     else
     cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
