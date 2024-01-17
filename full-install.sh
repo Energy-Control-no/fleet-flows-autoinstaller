@@ -135,26 +135,31 @@ else
     sudo npm install -g n
 fi
 
-sudo n install 16.2
-
+sudo n install 18
 debug_echo "DEBUG" "checking if node-red is installed"
 if [ -f "/usr/local/bin/node-red" ]; then
 debug_echo "DEBUG" "installed /usr/local/bin/node-red"
 elif [ -f "/usr/bin/node-red" ]; then
 debug_echo "DEBUG" "installed /usr/bin/node-red"
 else
-    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node16  
+    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node18  
 fi
 
 
 # Check and generate SSH key
 if [ ! -f "$SSH_KEY_PATH" ]; then
-
     cecho "GREEN" "Generating new SSH key..."
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 check_git_access() {
-    ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 | grep -q "successfully authenticated"
+    
+    if ssh -o BatchMode=yes -T $GIT_SERVER 2>&1; then
+        echo "SSH access to Git server verified."
+        return 0
+    else
+        echo "Failed to verify SSH access to Git server."
+        return 1
+    fi
 }
 create_airtable_record() {
     local hostname=$1
