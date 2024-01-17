@@ -152,10 +152,11 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     cecho "GREEN" "Generating new SSH key..."
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
+
 check_git_access() {
     ssh -q ssh://git@fleet-flows-git.lizzardsolutions.com "echo Hello from $(hostname)"
-    if [ $? -ne 0 ]; then
-        echo "SSH access to Git server verified."        
+    if [ $? -ne 0 ] ; then
+        cecho "SSH access to Git server verified.";
     else
     cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
     update_ssh_key_in_airtable
