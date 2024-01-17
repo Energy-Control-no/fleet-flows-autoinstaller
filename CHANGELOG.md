@@ -1,3 +1,12 @@
+## [0.2.19](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.18...v0.2.19) (2024-01-17)
+
+
+### Bug Fixes
+
+* using node v18 ([b1961bc](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/b1961bc46263e9bcbcc4c3536049855bd1268e9a))
+
+
+
 ## [0.2.18](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.17...v0.2.18) (2024-01-17)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * func align ([3e9e820](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/3e9e820f31a9290ec50b37f8e0a4e0d85b36a3c7))
-
-
-
-## [0.2.14](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.13...v0.2.14) (2024-01-16)
-
-
-### Bug Fixes
-
-* function align ([5a30398](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/5a30398fd625bac991ec188b84daebe7a05bf3c4))
 
 
 
