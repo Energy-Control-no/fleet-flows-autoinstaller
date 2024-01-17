@@ -1,3 +1,12 @@
+## [0.2.16](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.15...v0.2.16) (2024-01-17)
+
+
+### Bug Fixes
+
+* echo enabled ([f5b5027](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/f5b502758a1098fc9f7c961afef46623431387eb))
+
+
+
 ## [0.2.15](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.14...v0.2.15) (2024-01-16)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * api key was being overwritten ([88f9bbf](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/88f9bbf301128bd29a495228457e4cdd205dd4b4))
-
-
-
-## [0.2.11](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.10...v0.2.11) (2024-01-16)
-
-
-### Bug Fixes
-
-* API key parsing fix, flag to use is -k ([b63a4a0](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/b63a4a0b93498759807e49efa1ab0524af0cb8e5))
 
 
 
