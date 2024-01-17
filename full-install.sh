@@ -153,7 +153,7 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 check_git_access() {
-    timeout 10 ssh -q ssh://git@fleet-flows-git.lizzardsolutions.com "echo Hello from $(hostname)"
+    ssh -q ssh://git@fleet-flows-git.lizzardsolutions.com "echo Hello from $(hostname)"
     if [ $? -ne 0 ]; then
         echo "SSH access to Git server verified."        
     else
