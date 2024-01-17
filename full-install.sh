@@ -154,11 +154,10 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
 fi
 check_git_access() {
     if timeout 10  ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 "echo "Testing connection from $(hostname)" && exit"; then
-        echo "SSH access to Git server verified."
-        return 0
+        echo "SSH access to Git server verified."        
     else
-        echo "Failed to verify SSH access to Git server."
-        return 1
+    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
+    update_ssh_key_in_airtable
     fi
 }
 create_airtable_record() {
@@ -233,11 +232,7 @@ update_ssh_key_in_airtable() {
 
 
  debug_echo "DEBUG" "checking git access"
-if ! check_git_access; then
-    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
-    update_ssh_key_in_airtable
-fi
- debug_echo "DEBUG" "misterious exit?"
+ check_git_access
 
 # Constants
 GIT_SERVER="ssh://git@fleet-flow-git.lizzardsolutions.com/home/git/git"
