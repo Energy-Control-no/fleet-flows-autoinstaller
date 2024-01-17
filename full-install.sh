@@ -136,6 +136,7 @@ else
 fi
 
 sudo n install 18
+
 debug_echo "DEBUG" "checking if node-red is installed"
 if [ -f "/usr/local/bin/node-red" ]; then
 debug_echo "DEBUG" "installed /usr/local/bin/node-red"
@@ -153,7 +154,7 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
 fi
 check_git_access() {
     
-    if ssh -o BatchMode=yes -T $GIT_SERVER 2>&1; then
+    if timeout 10  ssh -o BatchMode=yes -T $GIT_SERVER 2>&1 "echo "Testing connection from $(hostname)" && exit"; then
         echo "SSH access to Git server verified."
         return 0
     else
@@ -232,7 +233,7 @@ update_ssh_key_in_airtable() {
 }
 
 
-
+ debug_echo "DEBUG" "checking git access"
 if ! check_git_access; then
     cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
     update_ssh_key_in_airtable
