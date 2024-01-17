@@ -1,3 +1,12 @@
+## [0.2.24](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.23...v0.2.24) (2024-01-17)
+
+
+### Bug Fixes
+
+* ssh error ([c9c1f0a](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/c9c1f0a144c4737c9e28a01b2f2608398d464de5))
+
+
+
 ## [0.2.23](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.22...v0.2.23) (2024-01-17)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * changed ssh auth principle (logging improvement) ([2a52c27](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/2a52c27234c80486bf722434f22bbe68db3938f5))
-
-
-
-## [0.2.19](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.18...v0.2.19) (2024-01-17)
-
-
-### Bug Fixes
-
-* using node v18 ([b1961bc](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/b1961bc46263e9bcbcc4c3536049855bd1268e9a))
 
 
 
