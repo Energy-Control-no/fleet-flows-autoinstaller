@@ -155,11 +155,11 @@ fi
 
 check_git_access() {
     ssh -q ssh://git@fleet-flows-git.lizzardsolutions.com "echo Hello from $(hostname)"
-    if [ $? -eq 0 ] ; then
-        cecho "BLUE" "SSH access to Git server verified."
+    if [ $? -ne 0 ] ; then
+    cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
+    update_ssh_key_in_airtable
     else
-        cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
-        update_ssh_key_in_airtable
+      cecho "BLUE" "SSH access to Git server verified."
     fi
 }
 create_airtable_record() {
