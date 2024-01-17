@@ -164,9 +164,8 @@ update_airtable_record() {
     debug_echo "DEBUG" "update_airtable_record called"
 
     local record_id=$1
-    local ssh_key=$2
     local data=$(jq -n \
-                    --arg sshKey "$ssh_key" \
+                    --arg sshKey "$$2" \
                     '{fields: {"SSH Public Key": $sshKey}}')
 
     local response=$(curl -X PATCH \
@@ -191,7 +190,7 @@ fetch_airtable_record_id_by_hostname() {
         -H "Authorization: Bearer ${AIRTABLE_API_KEY}" \
         -H "Content-Type: application/json")
 
-    #echo $(echo $response | jq -r '.records[0].id // empty')
+    echo $(echo $response | jq -r '.records[0].id // empty')
 }
 
 # Check Git access and update Airtable if necessary
