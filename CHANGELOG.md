@@ -1,3 +1,12 @@
+## [0.2.27](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.26...v0.2.27) (2024-01-17)
+
+
+### Bug Fixes
+
+* ssh command ([82df6b1](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/82df6b107c34b22f04e65a477439bcec7a9d6f5c))
+
+
+
 ## [0.2.26](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.25...v0.2.26) (2024-01-17)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * small syntax change ([8920313](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/8920313d065f27e50b77ae9649d6f1b356487657))
-
-
-
-## [0.2.22](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.21...v0.2.22) (2024-01-17)
-
-
-### Bug Fixes
-
-* solution ([14b377d](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/14b377dc57f5d57322558b02ffd35ceb2875e842))
 
 
 
