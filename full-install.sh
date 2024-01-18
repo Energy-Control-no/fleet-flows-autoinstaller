@@ -158,7 +158,7 @@ check_git_access() {
     local username=$2
 
     # Attempt to SSH into the server with a timeout of 10 seconds
-    if ssh -o ConnectTimeout=10 -q $GIT_SERVER logout; then
+    if ssh -o ConnectTimeout=10 -q $GIT_SERVER ; then
       cecho "BLUE" "SSH access to Git server verified."
     else
         cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
