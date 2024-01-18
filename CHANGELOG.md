@@ -1,3 +1,12 @@
+## [0.2.42](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.41...v0.2.42) (2024-01-18)
+
+
+### Bug Fixes
+
+* was non existing cecho color f. with me ? ([e71e567](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/e71e567a9143c907d777a7e05f7fe2bda7b2fa1e))
+
+
+
 ## [0.2.41](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.40...v0.2.41) (2024-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * exit added ([e6cf25a](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/e6cf25a78c4738342596a8ebad3d909d4d1e2055))
-
-
-
-## [0.2.37](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.36...v0.2.37) (2024-01-18)
-
-
-### Bug Fixes
-
-* logout command removed ([8e3e40f](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/8e3e40f4589cdcc8bf9d93ae57aba7d51273af59))
 
 
 
