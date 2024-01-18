@@ -1,3 +1,12 @@
+## [0.2.39](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.38...v0.2.39) (2024-01-18)
+
+
+### Bug Fixes
+
+* commented ([9ff8b76](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/9ff8b7683aad5eaa2c1c94544b3a0196fc355cb5))
+
+
+
 ## [0.2.38](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.37...v0.2.38) (2024-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * program exiting randomly ([a7e0fcc](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/a7e0fcc031011e8c8d094f0b201b3d73da0c05c8))
-
-
-
-## [0.2.34](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.33...v0.2.34) (2024-01-17)
-
-
-### Bug Fixes
-
-* redesigned check_git_access ([ac2a245](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/ac2a24539065bf1a5d81ae4becbedc071b3a3272))
 
 
 
