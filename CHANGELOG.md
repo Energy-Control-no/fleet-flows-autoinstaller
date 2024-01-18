@@ -1,3 +1,12 @@
+## [0.2.40](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.39...v0.2.40) (2024-01-18)
+
+
+### Bug Fixes
+
+* hopefully ssh works! ([e85a715](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/e85a7156f9ec0d3cfc1b2e4d62a81b451ab0a458))
+
+
+
 ## [0.2.39](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.38...v0.2.39) (2024-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * logout instead of exit ([da84794](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/da84794c02be6a5339624862cf952d2f05ec059d))
-
-
-
-## [0.2.35](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.34...v0.2.35) (2024-01-17)
-
-
-### Bug Fixes
-
-* program exiting randomly ([a7e0fcc](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/a7e0fcc031011e8c8d094f0b201b3d73da0c05c8))
 
 
 
