@@ -157,7 +157,7 @@ check_git_access() {
     # Attempt to SSH into the server with a timeout of 10 seconds
     if (ssh -o ConnectTimeout=10 -q $GIT_SERVER exit && echo "connected") ; then
      
-      cecho "GREEN" "SSH access to Git server verified."
+     # cecho "GREEN" "SSH access to Git server verified."
     else
         cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
         update_ssh_key_in_airtable
