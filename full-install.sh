@@ -159,7 +159,7 @@ check_git_access() {
      
       cecho "BLUE" "SSH access to Git server verified."
     else
-        cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
+        cecho "GREEN" "Git server access failed. Updating SSH key in Airtable..."
         update_ssh_key_in_airtable
     fi
 }
