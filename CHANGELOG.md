@@ -1,3 +1,12 @@
+## [0.2.47](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.46...v0.2.47) (2024-01-18)
+
+
+### Bug Fixes
+
+* repo name changed. ([fc43205](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/fc432052c4bedb21ab8fd8a6f5e5b50b6d831c90))
+
+
+
 ## [0.2.46](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.45...v0.2.46) (2024-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * wrong part changed. ([379a2f6](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/379a2f6358bbd430549150ede336ff9bf3e6f7c2))
-
-
-
-## [0.2.42](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.41...v0.2.42) (2024-01-18)
-
-
-### Bug Fixes
-
-* was non existing cecho color f. with me ? ([e71e567](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/e71e567a9143c907d777a7e05f7fe2bda7b2fa1e))
 
 
 
