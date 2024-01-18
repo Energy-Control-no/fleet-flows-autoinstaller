@@ -118,7 +118,7 @@ debug_echo "DEBUG" " installing specific version of node"
 cecho "GREEN" "Node.js and npm are updated to the latest versions."
 
 # Install Node.js, npm, and Node-RED
-ensure_installed inotify-tools
+#ensure_installed inotify-tools    UNCOMENT WHEN FINISHED
 ensure_installed git
 ensure_installed jq
 ensure_installed nano
@@ -135,7 +135,7 @@ else
     sudo npm install -g n
 fi
 
-sudo n install 18
+# sudo n install 18 UNCOMMENT
 
 debug_echo "DEBUG" "checking if node-red is installed"
 if [ -f "/usr/local/bin/node-red" ]; then
