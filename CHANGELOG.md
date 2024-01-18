@@ -1,3 +1,12 @@
+## [0.2.38](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.37...v0.2.38) (2024-01-18)
+
+
+### Bug Fixes
+
+* exit added ([e6cf25a](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/e6cf25a78c4738342596a8ebad3d909d4d1e2055))
+
+
+
 ## [0.2.37](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.36...v0.2.37) (2024-01-18)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * redesigned check_git_access ([ac2a245](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/ac2a24539065bf1a5d81ae4becbedc071b3a3272))
-
-
-
-## [0.2.33](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.32...v0.2.33) (2024-01-17)
-
-
-### Bug Fixes
-
-* no idea whats going on anymore ([aee9e21](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/aee9e21485dc52cbbadf949e9423ef58208272a2))
-* push ([afeda50](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/afeda5016d4be81d6dc5464a141d9488ef64ba86))
 
 
 
