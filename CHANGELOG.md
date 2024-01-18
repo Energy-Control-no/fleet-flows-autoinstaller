@@ -1,3 +1,12 @@
+## [0.2.37](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.36...v0.2.37) (2024-01-18)
+
+
+### Bug Fixes
+
+* logout command removed ([8e3e40f](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/8e3e40f4589cdcc8bf9d93ae57aba7d51273af59))
+
+
+
 ## [0.2.36](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.35...v0.2.36) (2024-01-17)
 
 
@@ -32,15 +41,6 @@
 
 * no idea whats going on anymore ([aee9e21](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/aee9e21485dc52cbbadf949e9423ef58208272a2))
 * push ([afeda50](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/afeda5016d4be81d6dc5464a141d9488ef64ba86))
-
-
-
-## [0.2.32](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.31...v0.2.32) (2024-01-17)
-
-
-### Bug Fixes
-
-* if/elif fix ([ab4e9de](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/ab4e9def725829e919b7149641f9ab0394b6b667))
 
 
 
