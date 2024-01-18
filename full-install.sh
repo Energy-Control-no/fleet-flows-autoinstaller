@@ -248,7 +248,7 @@ cd $HOME
 clone_repository() {
     local repo_name=$1
     local branch=$2
-    until git clone --single-branch --branch ${branch} ${GIT_SERVER}/${repo_name}.git; do
+    until git clone --single-branch --branch ${branch} ${GIT_SERVER}/${repo_name}; do
         cecho "YELLOW" "Git clone of $repo_name failed. Retrying..."
         sleep 5
     done
