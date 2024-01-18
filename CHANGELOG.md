@@ -1,3 +1,12 @@
+## [0.2.46](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.45...v0.2.46) (2024-01-18)
+
+
+### Bug Fixes
+
+* i think i solved it ([f5e3c5d](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/f5e3c5d0ddbc269de65b43a0a5d6ca695df07558))
+
+
+
 ## [0.2.45](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.44...v0.2.45) (2024-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * was non existing cecho color f. with me ? ([e71e567](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/e71e567a9143c907d777a7e05f7fe2bda7b2fa1e))
-
-
-
-## [0.2.41](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.40...v0.2.41) (2024-01-18)
-
-
-### Bug Fixes
-
-* still exiting ([add7f5b](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/add7f5b86e37f2389199322b69a1a0837d41d767))
 
 
 
