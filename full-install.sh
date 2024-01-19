@@ -119,7 +119,7 @@ debug_echo "DEBUG" " installing specific version of node"
 cecho "GREEN" "Node.js and npm are updated to the latest versions."
 
 # Install Node.js, npm, and Node-RED
-#ensure_installed inotify-tools    UNCOMENT WHEN FINISHED
+ensure_installed inotify-tools 
 ensure_installed git
 ensure_installed jq
 ensure_installed nano
@@ -136,7 +136,7 @@ else
     sudo npm install -g n
 fi
 
-# sudo n install 18 UNCOMMENT
+ sudo n install 18 
 
 debug_echo "DEBUG" "checking if node-red is installed"
 if [ -f "/usr/local/bin/node-red" ]; then
@@ -144,7 +144,7 @@ debug_echo "DEBUG" "installed /usr/local/bin/node-red"
 elif [ -f "/usr/bin/node-red" ]; then
 debug_echo "DEBUG" "installed /usr/bin/node-red"
 else
-    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --confirm-pi --node18  
+    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)  --confirm-install  --node18  
 fi
 
 
@@ -276,7 +276,7 @@ RETRY_TIME=5
 SCHEMA_FILE_PATH=$1/schema.yml
 NODE_RED_DIRECTORY=$HOME/
 CONFIGS_DIR=$HOME/fleet-files/config
-RESTART_COMMAND='find  $HOME/fleet-files -maxdepth 1 -type f -exec cp {}  $HOME//.node-red/ \ && sudo systemctl restart nodered'
+RESTART_COMMAND='find $HOME/fleet-files -maxdepth 1 -type f -exec cp {} $HOME/.node-red/ \; && sudo systemctl restart nodered'
 EOL
 }
 
