@@ -8,11 +8,12 @@ BRANCH="main"
 
 check_git_access() {
     # Attempt to SSH into the server with a timeout of 10 seconds
-    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected") ; then
-     
+    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected") then
      echo "SSH access to Git server verified."
+
     else
-        cecho "RED" "Git server access failed"
+    
+        echo "RED" "Git server access failed"
         
     fi
 }
