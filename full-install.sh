@@ -1,4 +1,10 @@
 #!/bin/bash
+GIT_SERVER="ssh://git@fleet-flows-git.lizzardsolutions.com"
+AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
+AIRTABLE_TABLE_NAME="Unipi" 
+HOSTNAME=$(hostname)
+SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+BRANCH="main" 
 
 check_git_access() {
     # Attempt to SSH into the server with a timeout of 10 seconds
@@ -6,8 +12,8 @@ check_git_access() {
      
      echo "SSH access to Git server verified."
     else
-        cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
-        update_ssh_key_in_airtable
+        cecho "RED" "Git server access failed"
+        
     fi
 }
 check_git_access
@@ -69,12 +75,7 @@ fi
 
 # Constants
 # Constants
-GIT_SERVER="ssh://git@fleet-flows-git.lizzardsolutions.com"
-AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
-AIRTABLE_TABLE_NAME="Unipi" 
-HOSTNAME=$(hostname)
-SSH_KEY_PATH="$HOME/.ssh/id_rsa"
-BRANCH="main"
+
 # Update package lists
 
 check_airtable_api_key() {
