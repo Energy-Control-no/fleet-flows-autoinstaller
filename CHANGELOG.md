@@ -1,3 +1,12 @@
+## [0.2.56](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.55...v0.2.56) (2024-01-19)
+
+
+### Bug Fixes
+
+* reversing ([94016ca](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/94016ca116c17db3d09b53e3075307f38b48fd35))
+
+
+
 ## [0.2.55](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.54...v0.2.55) (2024-01-19)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * finalizing ([1895595](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/1895595004fc1aa4b72b1914d2a897b68b9d518d))
-
-
-
-## [0.2.51](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/compare/v0.2.50...v0.2.51) (2024-01-19)
-
-
-### Bug Fixes
-
-* small change ([d7c212d](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/commit/d7c212db226a23549d55fdc46090f85305154bc8))
 
 
 
