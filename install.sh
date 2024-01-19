@@ -4,7 +4,7 @@ BRANCH="main"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 cd $HOME
 # Function to clone Git repositories
- debug_echo "DEBUG" "cloning repository"
+
 clone_repository() {
     local repo_name=$1
     local branch=$2
