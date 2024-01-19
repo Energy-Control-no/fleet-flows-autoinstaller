@@ -62,18 +62,7 @@ if [ -z "$AIRTABLE_API_KEY" ]; then
 fi
 
 
-check_git_access() {
-    # Attempt to SSH into the server with a timeout of 10 seconds
-    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected" && exit); then
-     echo "SSH access to Git server verified."
-     return 0 
-    else
-    
-        echo "RED" "Git server access failed"
-        
-    fi
-}
-check_git_access 
+
 
 check_airtable_api_key() {
     debug_echo "DEBUG" "check_airtable_api_key called"
@@ -163,7 +152,6 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 
-
 create_airtable_record() {
     local hostname=$1
     local ssh_key=$2
@@ -234,6 +222,19 @@ update_ssh_key_in_airtable() {
     fi
 }
 
+
+check_git_access() {
+    # Attempt to SSH into the server with a timeout of 10 seconds
+    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected" && exit); then
+     echo "SSH access to Git server verified."
+     return 0 
+    else
+        update_ssh_key_in_airtable
+        echo "RED" "Git server access failed"
+        
+    fi
+}
+ 
 
  debug_echo "DEBUG" "checking git access"
  check_git_access
