@@ -17,7 +17,8 @@ check_git_access() {
         
     fi
 }
-check_git_access
+check_git_access ""
+echo :test:
 # Check if Airtable API key is provided as an argument
 debug=false
 noupdate=true
