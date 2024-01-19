@@ -6,19 +6,6 @@ HOSTNAME=$(hostname)
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 BRANCH="main" 
 
-check_git_access() {
-    # Attempt to SSH into the server with a timeout of 10 seconds
-    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected"); then
-     echo "SSH access to Git server verified."
-
-    else
-    
-        echo "RED" "Git server access failed"
-        
-    fi
-}
-check_git_access ""
-echo :test:
 # Check if Airtable API key is provided as an argument
 debug=false
 noupdate=true
@@ -75,10 +62,18 @@ if [ -z "$AIRTABLE_API_KEY" ]; then
 fi
 
 
-# Constants
-# Constants
-
-# Update package lists
+check_git_access() {
+    # Attempt to SSH into the server with a timeout of 10 seconds
+    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected" && exit); then
+     echo "SSH access to Git server verified."
+     return 0 
+    else
+    
+        echo "RED" "Git server access failed"
+        
+    fi
+}
+check_git_access 
 
 check_airtable_api_key() {
     debug_echo "DEBUG" "check_airtable_api_key called"
