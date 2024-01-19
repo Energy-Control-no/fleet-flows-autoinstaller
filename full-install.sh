@@ -1,5 +1,16 @@
 #!/bin/bash
 
+check_git_access() {
+    # Attempt to SSH into the server with a timeout of 10 seconds
+    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected") ; then
+     
+     echo "SSH access to Git server verified."
+    else
+        cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
+        update_ssh_key_in_airtable
+    fi
+}
+check_git_access
 # Check if Airtable API key is provided as an argument
 debug=false
 noupdate=true
@@ -60,7 +71,7 @@ fi
 # Constants
 GIT_SERVER="ssh://git@fleet-flows-git.lizzardsolutions.com"
 AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
-AIRTABLE_TABLE_NAME="Unipi"
+AIRTABLE_TABLE_NAME="Unipi" 
 HOSTNAME=$(hostname)
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 BRANCH="main"
@@ -154,16 +165,7 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
     ssh-keygen -t rsa -b 4096 -f $SSH_KEY_PATH -N ""
 fi
 
-check_git_access() {
-    # Attempt to SSH into the server with a timeout of 10 seconds
-    if (ssh -o ConnectTimeout=10 -q $GIT_SERVER echo "connected") ; then
-     
-     echo "SSH access to Git server verified."
-    else
-        cecho "RED" "Git server access failed. Updating SSH key in Airtable..."
-        update_ssh_key_in_airtable
-    fi
-}
+
 create_airtable_record() {
     local hostname=$1
     local ssh_key=$2
