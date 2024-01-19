@@ -1,5 +1,25 @@
 
+cecho(){
+    RED="\033[0;31m"
+    GREEN="\033[0;32m"  # <-- [0 means not bold
+    YELLOW="\033[1;33m" # <-- [1 means bold
+    CYAN="\033[1;36m"
+    Error="\033[0;31m"
+    DEBUG="\033[0;31;47m"
+    # ... Add more colors if you like
+
+    NC="\033[0m" # No Color
+
+    # printf "${(P)1}${2} ${NC}\n" # <-- zsh
+    printf "${!1}${2} ${NC}\n" # <-- bash
+}
 # Constants
+GIT_SERVER="ssh://git@fleet-flows-git.lizzardsolutions.com"
+AIRTABLE_BASE_ID="appYWVOaoPhQB0nmA"
+AIRTABLE_TABLE_NAME="Unipi"
+HOSTNAME=$(hostname)
+SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+BRANCH="main"
 BRANCH="main"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 cd $HOME
