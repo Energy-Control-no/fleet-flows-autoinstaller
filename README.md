@@ -1,54 +1,52 @@
-# Fleet Flows Autoinstaller
+## Usecase:
+> This executable is an auto-installer for multiple services on a single IOT device, which monitors remote repoitories and keeps the local repositories in sync with it by pulling updates as and when found.
 
-## Overview
+## How to use it:
+> It is an executable Go file which runs through CLI and performs actions based on `flags` given to it during run time.
 
-The Fleet Flows Autoinstaller is a powerful and easy-to-use script designed to streamline the installation of the Fleet Flow application. It automates the setup process, ensuring a quick and efficient deployment.
+> Yup something like `-b,-c` etc...
 
-## Prerequisites
+## To start the autoinstaller:
+- Open your Terminal or Command Prompt.
+- `cd` to the directroy where the executable resides.
+- Enter the name of the executable for example:
+    > *`sudo`* ./installer `-b="this is the value for the flag for this run"`
+- Hit enter!
 
-Before running the autoinstaller, ensure that you have:
-- An active internet connection
-- Your Airtable API Key with data.records:read & write scopes. For the METADATA base
+**use `sudo` as this program requires elevated privileges.*
 
-## Installation
+## Flags that are supported
+> `-r`  :  Repository url --- type: *`string`*  
+`default: `ssh://git@fleet-flows-git.lizzardsolutions.com 
 
-To install and run the Fleet Flows Autoinstaller, execute the following command:
+> `-sb` :  Software branch --- type: *`string`*    
+`default: ` main
 
-```bash
-curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flows-autoinstaller/main/full-install.sh | bash -s -- [Your Airtable API Key] 
-``` 
-## Remove
+> `-fb` :  Files Branch  --- type: *`string`*    
+`default: ` main 
 
-To install and run the Fleet Flows Autoinstaller, execute the following command:
+>  `-b` : Airtable base Id/name  --- type: *`string`*  
+`default: ` appYWVOaoPhQB0nmA
 
-```bash
-curl -sSL https://raw.githubusercontent.com/Energy-Control-no/fleet-flows-autoinstaller/main/remove.sh| bash -s 
-``` 
-## Features
+>  `-t` : Airtable name   --- type: *`string`*  
+`default: ` Unipi
 
-- **Automated Installation**: Quickly sets up Fleet Flows without manual intervention.
-- **Secure**: Implements best practices to ensure a secure installation.
-- **Customizable**: Easily adaptable to accommodate different environments and configurations.
+>  `-k` : Airtable API key/token  --- type: *`string`*  
+`default: ` YOUR_API_KEY_HERE
 
-## How It Works
+## Dir for service & log files
+- After successful installation the following services will be started in the users system and there paths are defined below:
+#### `fleet-flows-js.service `
+> /etc/systemd/system/fleet-flows-js.service
+#### `restart_change_ffjs.sh`
+> /usr/local/bin/restart_change_ffjs.sh
+#### `fleet-flows-js-listener.service `
+> /etc/systemd/system/fleet-flows-js-listener.service
+#### `auto_updater_ffjs.sh`
+> /usr/local/bin/auto_updater_ffjs.sh
+#### `auto_updater_ffjs.log`
+> /var/log/auto_updater_ffjs.log
 
-### The script performs the following actions:
+## Logging
 
-- Validates the provided Airtable API Key.
-- Downloads and installs necessary dependencies and packages.
-- Configures the Fleet Flows environment based on the provided API Key.
-- Performs system checks to ensure successful installation.
-
-## Troubleshooting
-
-### If you encounter any issues during the installation process, please check the following:
-
-- Ensure that your Airtable API Key is correct.
-- Verify that your server meets all the prerequisites.
-- Check your internet connection.
-
-For further assistance, [create an issue](https://github.com/Energy-Control-no/fleet-flows-autoinstaller/issues) on the GitHub repository.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+> All the errors during installation will be logged under `logs/Errorlogged.txt` which will reside exactly where the executable is. 
