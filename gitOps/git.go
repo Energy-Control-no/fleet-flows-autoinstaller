@@ -22,7 +22,7 @@ import (
 func CheckGitAccessAndCloneIfAccess() {
 
 	defer utility.Wg.Done() // Decrement the wait group when the goroutine completes
-
+	loopCount := 1
 	maxTries, err := strconv.Atoi(os.Getenv("MAX_RETRIES"))
 	if err != nil {
 		fmt.Println(utility.Yellow, "Please update value of MAX_RETRIES in environment...currently setting it to 5")
@@ -44,7 +44,16 @@ func CheckGitAccessAndCloneIfAccess() {
 			// err == nil because if its the first time its going to throw an
 			// error for : no such file or directory
 			// we'll bypass it for the first time so that access log can get created
-			continue
+			// call to check if accesslog is older than 10 mins
+			isOk, difference := utility.IsAccessLogOlderThanMinutes(utility.AccessLogCreatedOn, 10, "git")
+			if isOk {
+				// try again then
+				continue
+			}
+			fmt.Println(utility.Yellow, "It hasn't been 10 mins since you last tried to access the server and it wasn't verified, please try again after some time or wait "+fmt.Sprintf("%d", difference)+"mins for an auto re-attempt.", utility.Reset)
+			// sleep before retrying again for the time remaining
+			time.Sleep(time.Minute * time.Duration(difference))
+
 		}
 		// routine function to check for server access and clone repoS
 		fmt.Println(utility.Yellow + "checking git server access..." + utility.Reset)
@@ -63,7 +72,7 @@ func CheckGitAccessAndCloneIfAccess() {
 				// check if the public SSH key exists or not
 				homeDir, err := os.UserHomeDir()
 				if err != nil {
-					utility.Logger(err)
+					utility.Logger(err, utility.Error)
 					log.Fatal(utility.Red, "error getting user home dir: ", err, utility.Reset)
 				}
 				_, err1 := os.Stat(homeDir + "/" + config.SSHKeyPath)
@@ -79,7 +88,7 @@ func CheckGitAccessAndCloneIfAccess() {
 					fmt.Println(utility.Yellow+"calling generateSSHKey()... with SSH_KEY_PATH: ", config.SSHKeyPath, utility.Reset)
 					err := utility.GenerateSSHKey(config.SSHKeyPath)
 					if err != nil {
-						utility.Logger(err)
+						utility.Logger(err, utility.Error)
 						log.Fatal(utility.Red+"Error while generating PUB SSH KEY: ", err, utility.Reset)
 					}
 					fmt.Println(utility.Yellow + "calling updateSSHKeyInAirtable()..." + utility.Reset)
@@ -88,11 +97,13 @@ func CheckGitAccessAndCloneIfAccess() {
 				}
 				utility.CreateAccessLog()
 				// creating accesslog for current host
-				fmt.Println(utility.BrightYellow + "Server access attempeted!! log created, Don't close the program we are retrying for access..." + utility.Reset)
+				fmt.Println(utility.BrightYellow + "Server access attempeted!! log created, Don't close the program we are retrying for access in " + os.Getenv("SLEEP_BETWEEN") + " mins " + "(" + fmt.Sprintf("%d", loopCount) + "/" + os.Getenv("MAX_RETRIES") + ")" + utility.Reset)
 			}
 		}
 		// decrement maxTries after each iteration
 		maxTries -= 1
+		// increment loop count
+		loopCount += 1
 		// sleep before retrying again
 		time.Sleep(time.Minute * time.Duration(sleepBetween))
 	}
@@ -105,35 +116,80 @@ func CheckGitAccessAndCloneIfAccess() {
 
 	log.Println(utility.Yellow, "calling ensureNodeRedInstalled().....", utility.Reset)
 	// ensure node-red installed
-	utility.EnsureNodeRedInstalled()
+	// utility.EnsureNodeRedInstalled() // disable node-red installation for now
 	// create service files
 	services.CreateServices()
 	fmt.Println(utility.BrightGreen, "Installation complete.", utility.Reset)
 }
 
 // checks Git access
+// func CheckGitAccess(repository string) bool {
+// 	gitServer := repository
+// 	// homeDir, _ := os.UserHomeDir()
+// 	// log.Println("git access through ", homeDir, config.SSHKeyPath)
+// 	// Attempt to SSH into the server with a timeout of 10 seconds
+// 	log.Println("git access through ", gitServer)
+
+// 	cmd := exec.Command("ssh", "-q", "-o", "ConnectTimeout=10", gitServer, "exit")
+// 	output, err := cmd.Output()
+
+// 	if err == nil {
+// 		fmt.Println(utility.BrightGreen + "SSH access to Git server verified." + utility.Reset)
+// 		return true
+// 	}
+
+// 	// Check if the error is a timeout error
+// 	if strings.Contains(string(output), "Connection timed out") {
+// 		fmt.Println(utility.Red + "Git server access timed out." + utility.Reset)
+// 		return false
+// 	}
+
+// 	fmt.Println(utility.Red + "Git server access failed: " + string(output) + utility.Reset)
+// 	return false
+// }
+
 func CheckGitAccess(repository string) bool {
 	gitServer := repository
-	// homeDir, _ := os.UserHomeDir()
-	// log.Println("git access through ", homeDir, config.SSHKeyPath)
-	// Attempt to SSH into the server with a timeout of 10 seconds
-	log.Println("git access through ", gitServer)
 
-	cmd := exec.Command("ssh", "-q", "-o", "ConnectTimeout=10", gitServer, "exit")
+	log.Println(utility.BrightYellow, "Checking Git clone access to ", repository, utility.Reset)
+
+	// Create a temporary directory
+	tempDir, err := os.MkdirTemp("", "git-clone-check")
+	if err != nil {
+		fmt.Println(utility.Red, "Error creating temporary directory:", err, utility.Reset)
+		return false
+	}
+	defer os.RemoveAll(tempDir) // Clean up the temporary directory when done
+
+	// Attempt to clone into the temporary directory
+	cmd := exec.Command("git", "clone", "-n", gitServer+"/"+os.Getenv("REPO_TO_CHECK_SERVER_ACCESS"), tempDir)
 	output, err := cmd.CombinedOutput()
 
 	if err == nil {
-		fmt.Println(utility.BrightGreen + "SSH access to Git server verified." + utility.Reset)
+		// If the command succeeded, it means clone access is verified
+		fmt.Println(utility.BrightGreen, "Git clone access to", repository, "verified.", utility.Reset)
 		return true
 	}
 
 	// Check if the error is a timeout error
 	if strings.Contains(string(output), "Connection timed out") {
-		fmt.Println(utility.Red + "Git server access timed out." + utility.Reset)
+		fmt.Println(utility.Red, "Git server access timed out.", utility.Reset)
 		return false
 	}
 
-	fmt.Println(utility.Red + "Git server access failed: " + string(output) + utility.Reset)
+	// Check if the error indicates authentication failure
+	if strings.Contains(string(output), "Permission denied") {
+		fmt.Println(utility.Red, "Authentication to Git server failed.", utility.Reset)
+		return false
+	}
+
+	// Check if the error contains a specific message indicating clone access issues
+	if strings.Contains(string(output), "could not read Username") {
+		fmt.Println(utility.Red, "Git clone access to", repository, "failed.", utility.Red)
+		return false
+	}
+
+	fmt.Println(utility.Red, "Git clone access to", repository, "failed:", string(output), utility.Reset)
 	return false
 }
 
@@ -196,14 +252,14 @@ func CreateEnvFile() {
 	// get home dir of user
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		utility.Logger(err)
+		utility.Logger(err, utility.Error)
 		log.Println(utility.Red, "error getting user home dir: ", err, utility.Reset)
 	}
 	fleetFlowsJsDir := filepath.Join(homeDir, "fleet-flows-js")
 	// changing dir to fleet-flows-js dir
 	err = os.Chdir(fleetFlowsJsDir)
 	if err != nil {
-		utility.Logger(err)
+		utility.Logger(err, utility.Error)
 		fmt.Println(utility.Red, "Error changing directory to fleet-flows-js directory:", err, utility.Reset)
 		os.Exit(1)
 	}
@@ -212,14 +268,19 @@ func CreateEnvFile() {
 	file, err := os.Create(envFilePath)
 	if err != nil {
 		// Handle error
-		utility.Logger(err)
+		utility.Logger(err, utility.Error)
 		log.Println(utility.Red, "Error creating .env file: ", err, utility.Reset)
 		os.Exit(1)
 	}
 	defer file.Close()
 	schemaFilePath := *config.SchemaFilePath
+
 	if schemaFilePath == "" {
 		schemaFilePath = "schema.yml"
+	}
+	if schemaFilePath != "" && !strings.Contains(schemaFilePath, ".yml") {
+		fmt.Println(utility.Red, "Usage -sf='path/to/schema.yml'", utility.Reset)
+		log.Fatal(utility.Red, "Please provide a valid schema file path", utility.Reset)
 	}
 	// content for env file
 	// Define content for the environment file
@@ -237,15 +298,56 @@ func CreateEnvFile() {
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
 	err = ioutil.WriteFile(envFilePath, envContent, 0644)
 	if err != nil {
-		utility.Logger(err)
-		fmt.Errorf(utility.Red, "error creating environment file: %v", err, utility.Reset)
-		os.Exit(1)
+		utility.Logger(err, utility.Error)
+		log.Fatal(utility.Red, "error creating environment file: ", err, utility.Reset)
 	}
 	fmt.Println(utility.BrightGreen, "Environment file created successfully.", utility.Reset)
-	fmt.Println("env file: ", string(envContent))
+}
+func CreateSchemaFile() {
+	// get home dir of user
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		utility.Logger(err, utility.Error)
+		log.Println(utility.Red, "error getting user home dir: ", err, utility.Reset)
+	}
+	fleetFlowsJsDir := filepath.Join(homeDir, "fleet-flows-js")
+	// changing dir to fleet-flows-js dir
+	err = os.Chdir(fleetFlowsJsDir)
+	if err != nil {
+		utility.Logger(err, utility.Error)
+		fmt.Println(utility.Red, "Error changing directory to fleet-flows-js directory:", err, utility.Reset)
+		os.Exit(1)
+	}
+	// defining path to .env file
+	schemaFilePath := filepath.Join(fleetFlowsJsDir, "schema.yml")
+	file, err := os.Create(schemaFilePath)
+	if err != nil {
+		// Handle error
+		utility.Logger(err, utility.Error)
+		log.Println(utility.Red, "Error creating .schema file: ", err, utility.Reset)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	// content for schema file
+	// Define content for the environment file
+	schemaContent := []byte(fmt.Sprintf(`# Environment variables
+	dependencies:
+		- ''
+	flows:
+		'Welcome':
+		  	- basedOn: "flow://welcome"
+			- description: "Welcome to Fleet-Flows"
+	`))
+	err = ioutil.WriteFile(schemaFilePath, schemaContent, 0644)
+	if err != nil {
+		utility.Logger(err, utility.Error)
+		log.Fatal(utility.Red, "error creating schema file: ", err, utility.Reset)
+	}
+	fmt.Println(utility.BrightGreen, "Schema file created successfully.", utility.Reset)
 }
 
-// switches directores to clone repositories and runs npm install to set them up.
+// switches directories to clone repositories and runs npm install to set them up.
 func SwitchDirectoriesAndCloneRepos() {
 
 	log.Println(utility.Yellow + "switching directories....." + utility.Reset)
@@ -271,15 +373,13 @@ func SwitchDirectoriesAndCloneRepos() {
 	fmt.Println(utility.Yellow + "Cloning repositories..." + utility.Reset)
 	err = CloneRepository("fleet-files", *config.FilesBranch)
 	if err != nil {
-		utility.Logger(err)
-
+		utility.Logger(err, utility.Error)
 		os.Exit(1)
 	}
 
 	err = CloneRepository("fleet-flows-js", *config.FilesBranch)
 	if err != nil {
-		utility.Logger(err)
-
+		utility.Logger(err, utility.Error)
 		os.Exit(1)
 	}
 
@@ -307,4 +407,9 @@ func SwitchDirectoriesAndCloneRepos() {
 	// create env file at fleet-flows-js dir
 	fmt.Println(utility.Yellow, "calling createEnvFile()......", utility.Reset)
 	CreateEnvFile()
+
+	// create schema file at fleet-flows-js dir
+	fmt.Println(utility.Yellow, "calling createSchemaFile()......", utility.Reset)
+	CreateSchemaFile()
+
 }

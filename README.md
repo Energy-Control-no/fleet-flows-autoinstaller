@@ -10,7 +10,7 @@
 - Open your Terminal or Command Prompt.
 - `cd` to the directroy where the executable resides.
 - Enter the name of the executable for example:
-    > *`sudo`* ./installer `-b="this is the value for the flag for this run"`
+    > *`sudo`* ./installer `-b="this is the value for the flag for this run" && apt install ca-certificates && apt install tzdata`
 - Hit enter!
 
 **use `sudo` as this program requires elevated privileges.*
@@ -34,6 +34,12 @@
 >  `-k` : Airtable API key/token  --- type: *`string`*  
 `default: ` YOUR_API_KEY_HERE
 
+>  `-sf` : Schema file path  --- type: *`string`*  
+`default: ` schema.yml
+
+>  `-n` : Node version  --- type: *`string`*  
+`default: ` 18.19.1-1nodesource1
+
 ## Dir for service & log files
 - After successful installation the following services will be started in the users system and there paths are defined below:
 #### `fleet-flows-js.service `
@@ -49,4 +55,8 @@
 
 ## Logging
 
-> All the errors during installation will be logged under `logs/Errorlogged.txt` which will reside exactly where the executable is. 
+> All the errors during installation will be logged under `Errorlogged.txt` which will reside exactly where the executable is. 
+
+## Pre-requisites
+> apt install ca-certificates -y
+> apt install tzdata

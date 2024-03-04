@@ -24,7 +24,7 @@ func CheckAirtableAPIKey(apiKey string, AIRTABLE_BASE_ID string, AIRTABLE_TABLE_
 	url := fmt.Sprintf("https://api.airtable.com/v0/%s/%s", AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		utility.Logger(err)
+		utility.Logger(err, utility.Error)
 		fmt.Println("Error creating request:", err)
 		return false
 	}
@@ -38,7 +38,7 @@ func CheckAirtableAPIKey(apiKey string, AIRTABLE_BASE_ID string, AIRTABLE_TABLE_
 		resp, err = client.Do(req)
 		if err != nil {
 			if maxTries == 0 {
-				utility.Logger(err)
+				utility.ErrorLog.Output(2, utility.Error+"Max Retries for request exceeded for verifying airtable key")
 				fmt.Println(utility.Red, "Max retries exceeded...", err, utility.Reset)
 				break
 			}
@@ -100,7 +100,7 @@ func UpdateAirtableRecord(recordID, sshKey string) {
 		resp, err = client.Do(req)
 		if err != nil {
 			if maxTries == 0 {
-				utility.Logger(err)
+				utility.ErrorLog.Output(2, utility.Error+"Max Retries for request exceeded for updating airtable Record")
 				fmt.Println(utility.Red, "Max retries exceeded...", err, utility.Reset)
 				break
 			}
@@ -157,7 +157,7 @@ func CreateAirtableRecord(hostname, sshKey string) error {
 		resp, err = client.Do(req)
 		if err != nil {
 			if maxTries == 0 {
-				utility.Logger(err)
+				utility.Logger(err, utility.Error)
 				fmt.Println(utility.Red, "Max retries exceeded...", err, utility.Reset)
 				break
 			}
@@ -170,13 +170,13 @@ func CreateAirtableRecord(hostname, sshKey string) error {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
 	// Print the response body as a string
-	fmt.Println("Response Body:", string(body))
+	// fmt.Println("Response Body:", string(body))
 	// Check response status
 	if resp.StatusCode != http.StatusOK {
 		log.Fatal(utility.Red, "create record failed with status code ", resp.StatusCode, utility.Reset)
@@ -212,7 +212,7 @@ func FetchAirtableRecordIDBySSHKey(SSHKey string) (string, error) {
 		resp, err = client.Do(req)
 		if err != nil {
 			if maxTries == 0 {
-				utility.Logger(err)
+				utility.Logger(err, utility.Error)
 				fmt.Println(utility.Red, "Max retries exceeded...", err, utility.Reset)
 				break
 			}
@@ -252,15 +252,15 @@ func FetchAirtableRecordIDBySSHKey(SSHKey string) (string, error) {
 func UpdateSSHKeyInAirtable() {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		utility.Logger(err)
-		log.Fatal(utility.Red, "error getting user home dir: ", err, utility.Reset)
+		utility.Logger(err, utility.Error)
+		log.Fatal(utility.Red, "Error getting user home dir: ", err, utility.Reset)
 	}
 	publicKeyPath := config.SSHKeyPath + ".pub"
 	publicKeyPath = filepath.Join(homeDir, publicKeyPath)
 	// Read the contents of the SSH public key file
 	publicKeyBytes, err := ioutil.ReadFile(publicKeyPath)
 	if err != nil {
-		utility.Logger(err)
+		utility.Logger(err, utility.Error)
 		fmt.Println("Error reading public key file:", err)
 		return
 	}
@@ -269,7 +269,7 @@ func UpdateSSHKeyInAirtable() {
 	hostname, _ := os.Hostname()
 	recordId, err := FetchAirtableRecordIDBySSHKey(publicKey)
 	if err != nil {
-		utility.Logger(err)
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "Error fetching record id: ", err, utility.Reset)
 	}
 
@@ -282,7 +282,7 @@ func UpdateSSHKeyInAirtable() {
 		log.Println("calling createAirtableRecord().............")
 		err := CreateAirtableRecord(hostname, publicKey)
 		if err != nil {
-			utility.Logger(err)
+			utility.Logger(err, utility.Error)
 			log.Fatal(utility.Red, "Error creating airtable record: ", err, utility.Reset)
 		}
 	}

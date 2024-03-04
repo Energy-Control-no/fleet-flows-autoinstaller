@@ -32,14 +32,14 @@ func createSystemdService() {
 	homeDir, err := os.UserHomeDir()
 	user, _ := user.Current()
 	if err != nil {
-		log.Fatal("error getting user's home directory: ", err)
+		log.Fatal(utility.Red, "error getting user's home directory: ", err, utility.Reset)
 	}
 
 	serviceFilePath := "/etc/systemd/system/fleet-flows-js.service"
 	// serviceFilePath := "fleet-flows-js.service"
 	file, err := os.OpenFile(serviceFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Fatal("error creating systemd service file: ", err)
+		log.Fatal(utility.Red, "error creating systemd service file: ", err, utility.Reset)
 	}
 
 	defer file.Close()
@@ -61,20 +61,20 @@ WantedBy=multi-user.target
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
-		log.Fatal("error writing to systemd service file: ", err)
+		log.Fatal(utility.Red, "error writing to systemd service file: ", err, utility.Reset)
 	}
 
 	// Enable and start the service
 	cmd := exec.Command("sudo", "systemctl", "enable", "fleet-flows-js.service")
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error enabling systemd service: ", err)
+		log.Fatal(utility.Red, "error enabling systemd service: ", err, utility.Reset)
 	}
 
 	cmd = exec.Command("sudo", "systemctl", "start", "fleet-flows-js.service")
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error starting systemd service: ", err)
+		log.Fatal(utility.Red, "error starting systemd service: ", err, utility.Reset)
 	}
 
 	fmt.Println("Systemd service created, enabled, and started successfully.")
@@ -119,14 +119,14 @@ monitor_and_restart
 
 	err := ioutil.WriteFile(config.RestartScript, []byte(scriptContent), 0755)
 	if err != nil {
-		log.Fatal("error writing restart script: ", err)
+		log.Fatal(utility.Red, "error writing restart script: ", err, utility.Reset)
 	}
 
 	// Change permissions of the restart script
 	cmd := exec.Command("sudo", "chmod", "+rx", config.RestartScript)
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error changing permissions of restart script: ", err)
+		log.Fatal(utility.Red, "error changing permissions of restart script: ", err, utility.Reset)
 	}
 
 	fmt.Printf("Restart script is set up: %s\n", config.RestartScript)
@@ -142,7 +142,7 @@ func createFleetFlowJSListenerService() {
 	// Create the service file
 	file, err := os.Create(serviceFilePath)
 	if err != nil {
-		log.Fatal("error creating systemd service file: ", err)
+		log.Fatal(utility.Red, "error creating systemd service file: ", err, utility.Reset)
 	}
 	defer file.Close()
 
@@ -166,27 +166,27 @@ WantedBy=multi-user.target
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
-		log.Fatal("error writing to systemd service file: ", err)
+		log.Fatal(utility.Red, "error writing to systemd service file: ", err, utility.Reset)
 	}
 
 	// Reload systemd daemon to read the new service file
 	cmd := exec.Command("sudo", "systemctl", "daemon-reload")
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error reloading systemd daemon: ", err)
+		log.Fatal(utility.Red, "error reloading systemd daemon: ", err, utility.Reset)
 	}
 
 	// Enable and start the service
 	cmd = exec.Command("sudo", "systemctl", "enable", "fleet-flows-js-listener")
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error enabling systemd service: ", err)
+		log.Fatal(utility.Red, "error enabling systemd service: ", err, utility.Reset)
 	}
 
 	cmd = exec.Command("sudo", "systemctl", "start", "fleet-flows-js-listener")
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error starting systemd service: ", err)
+		log.Fatal(utility.Red, "error starting systemd service: ", err, utility.Reset)
 	}
 
 	fmt.Println("Fleet Flows JS Listener Service is setup and started.")
@@ -205,7 +205,7 @@ func createAutoUpdateJob() {
 PROJECT_DIR=%s/fleet-flows-js
 BACKUP_DIR=%s/fleet-flows-js.backup
 REMOTE_REPO=%s/fleet-flows-js.git
-FILES_TO_BACKUP=("schema.yml" ".env") # Add other files as needed
+FILES_TO_BACKUP=(".env","schema.yml") # Add other files as needed
 BRANCH=%s
 
 if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
@@ -233,26 +233,31 @@ if [ -d "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/.git" ]; then
             fi
         done
 
-        # Delete the project directory
-        echo "Deleting old project directory..."
-        cd ..
-        rm -rf $PROJECT_DIR
+		# trying a pull
+		# Attempt to pull changes
+    	git pull origin $BRANCH
 
-        # Clone the remote repository
-        echo "Cloning the remote repository..."
-        git clone --single-branch --branch $BRANCH $REMOTE_REPO $PROJECT_DIR
-
-        # Restore the backed-up files
+		# Check if the pull was successful
+    	if [ $? -ne 0 ]; then
+        	echo "Git pull failed. Trying to reset the branch and pull again..."
+        
+			# Reset the branch to the remote state
+			git reset --hard origin/$BRANCH
+			
+			# Try pulling again
+			git pull origin $BRANCH
+		fi
+		# Restore the backed-up files
         echo "Restoring files..."
         cd $PROJECT_DIR
         npm i
-        for file in "${FILES_TO_BACKUP[@]}"; do
-            if [ -f "$BACKUP_DIR/$file" ]; then
-                cp $BACKUP_DIR/$file .
-            else
-                echo "Warning: Backup of $file not found for restoration."
-            fi
-        done
+		for file in "${FILES_TO_BACKUP[@]}"; do
+			if [ -f "$BACKUP_DIR/$file" ]; then
+				cp $BACKUP_DIR/$file .
+			else
+				echo "Warning: Backup of $file not found for restoration."
+			fi
+		done
 
         echo "Update complete."
     else
@@ -265,7 +270,7 @@ fi
 
 	err := ioutil.WriteFile(autoUpdaterScript, []byte(scriptContent), 0755)
 	if err != nil {
-		log.Fatal("error writing auto-updater script: ", err)
+		log.Fatal(utility.Red, "error writing auto-updater script: ", err, utility.Reset)
 	}
 
 	// Setup the cronjob for auto-update
@@ -275,7 +280,7 @@ fi
 	cmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | crontab -", cronjob))
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal("error setting up cronjob: %v", err)
+		log.Fatal(utility.Red, "error setting up cronjob: ", err, utility.Reset)
 	}
 
 	fmt.Println(utility.Green, "Cron job set up successfully: ", cronjob, utility.Reset)

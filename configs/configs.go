@@ -15,6 +15,7 @@ var (
 	Table             = flag.String("t", "", "airtable table name")
 	Key               = flag.String("k", "", "airtable API key")
 	SchemaFilePath    = flag.String("sf", "", "Schema File Path")
+	NodeVersion       = flag.String("n", "12.22.12-deb-1nodesource1", "node version")
 	RestartScript     = "/usr/local/bin/restart_change_ffjs.sh"
 	AutoUpdaterScript = "/usr/local/bin/auto_updater_ffjs.sh"
 	LogFile           = "/var/log/auto_updater_ffjs.log"
@@ -44,5 +45,7 @@ func Init() {
 	if *SchemaFilePath == "" {
 		*SchemaFilePath = os.Getenv("SCHEMA_FILE_PATH")
 	}
-
+	if *NodeVersion == "" {
+		*NodeVersion = os.Getenv("NODE_VERSION")
+	}
 }
