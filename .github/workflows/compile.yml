@@ -22,7 +22,7 @@ jobs:
 
     - name: Build
       run: |
-        go build -v -o installer ./...
+        go build -v -o installer ./main.go
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
