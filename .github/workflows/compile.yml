@@ -7,7 +7,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
    # Specify the environment to use its variables
     environment: release
 
@@ -23,8 +25,14 @@ jobs:
     - name: Build
       run: |
         go build -v -o installer ./main.go
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: installer
-        path: ./installer
+    - name: Test with Go
+        run: go test -json > TestResults-${{ matrix.go-version }}.json
+    - name: Upload Go test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Go-results-${{ matrix.go-version }}
+          path: TestResults-${{ matrix.go-version }}.json
+    - name: Semantic Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npx semantic-release
