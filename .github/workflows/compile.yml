@@ -1,0 +1,33 @@
+on:
+  push:
+    branches: [ 2-compiling-and-making-binary-via-github-actions ]
+
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+   # Specify the environment to use its variables
+    environment: release
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18  # Use the version of Go your project requires
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        go build -v -o installer ./...
+      env:  # You can also specify environment variables specifically for this step
+
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: installer
+        path: ./installer
