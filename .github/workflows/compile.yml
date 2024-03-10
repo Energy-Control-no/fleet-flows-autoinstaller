@@ -23,9 +23,6 @@ jobs:
     - name: Build
       run: |
         go build -v -o installer ./...
-      env:  # You can also specify environment variables specifically for this step
-
-
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
