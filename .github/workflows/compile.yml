@@ -1,0 +1,37 @@
+on:
+  push:
+    branches: [main]
+
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+   # Specify the environment to use its variables
+    environment: release
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18  # Use the version of Go your project requires
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        go build -v -o installer ./main.go
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.8.1'  # Specify the Node.js version required by semantic-release
+
+    - name: Semantic Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: npx semantic-release    
+   
