@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ 2-compiling-and-making-binary-via-github-actions ]
+    branches: [main]
 
 
 jobs:
