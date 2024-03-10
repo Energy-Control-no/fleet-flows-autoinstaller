@@ -25,7 +25,13 @@ jobs:
     - name: Build
       run: |
         go build -v -o installer ./main.go
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.8.1'  # Specify the Node.js version required by semantic-release
+
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: npx semantic-release
+      run: npx semantic-release    
+   
