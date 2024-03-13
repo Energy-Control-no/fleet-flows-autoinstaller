@@ -194,7 +194,44 @@ func EnsureNodeRedInstalled() {
 		fmt.Println(BrightGreen, "Node-RED installed successfully: ", nRedCmd, Reset)
 	} else {
 		fmt.Println(BrightGreen, "Node-RED is installed at: ", nRedCmd, Reset)
+		// create backup of flows.json as flows-backup.json and save it in home dir
+		// function call
+		makeFlowsBackupJson()
 	}
+}
+
+func makeFlowsBackupJson() {
+	// Define the directory where Node-RED is installed
+	nodeRedDir := "/path/to/node-red-directory"
+
+	// Check if flows.json exists in the Node-RED directory
+	flowsFilePath := filepath.Join(nodeRedDir, "flows.json")
+	_, err := os.Stat(flowsFilePath)
+	if os.IsNotExist(err) {
+		fmt.Println(Yellow, "flows.json not found in Node-RED directory! Not making any backup", Reset)
+		return
+	}
+
+	// Read the content of flows.json
+	flowsContent, err := ioutil.ReadFile(flowsFilePath)
+	if err != nil {
+		log.Fatal(Red, "Failed to read flows.json: \n", err, Reset)
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(Red, "Unable to get home directory: ", err, Reset)
+	}
+	// Define the backup file path (e.g., home directory)
+	backupFilePath := filepath.Join(home, "flows-backup.json")
+
+	// Write flows.json content to flows-backup.json
+	err = ioutil.WriteFile(backupFilePath, flowsContent, 0644)
+	if err != nil {
+		log.Fatal(Red, "Failed to write to flows-backup.json: \n", err, Reset)
+	}
+
+	fmt.Println(Green, "Backup of flows.json created successfully at ->", flowsFilePath, Reset)
 }
 
 /*Go:Open file for Log Critical Error Message */
@@ -530,4 +567,44 @@ func ExtractNodeJsRepoVersion() {
 	// }
 	// fmt.Println(Green, "Installed nodejs version ", *config.NodeVersion, Reset)
 
+}
+
+func EnvVariablesCheck() bool {
+	if *config.Repository == "" && os.Getenv("GIT_SERVER") == "" {
+		fmt.Println(Red, "Niether Repository flag nor GIT_SERVER env variable set, please set one", Reset)
+		return false
+	}
+	if *config.SoftwareBranch == "" && os.Getenv("FLOW_JS_BRANCH") == "" {
+		fmt.Println(Red, "Niether SoftwareBranch flag nor FLOW_JS_BRANCH env variable set, please set one", Reset)
+		return false
+	}
+	if *config.FilesBranch == "" && os.Getenv("FILES_BRANCH") == "" {
+		fmt.Println(Red, "Niether FilesBranch flag nor FILES_BRANCH env variable set, please set one", Reset)
+		return false
+	}
+	if *config.Base == "" && os.Getenv("AIRTABLE_BASE_ID") == "" {
+		fmt.Println(Red, "Niether Base flag nor AIRTABLE_BASE_ID env variable set, please set one", Reset)
+		return false
+	}
+	if *config.Table == "" && os.Getenv("AIRTABLE_TABLE") == "" {
+		fmt.Println(Red, "Niether Table flag nor AIRTABLE_TABLE env variable set, please set one", Reset)
+		return false
+	}
+	if *config.Key == "" && os.Getenv("AIRTABLE_API_KEY") == "" {
+		fmt.Println(Red, "Niether Key flag nor AIRTABLE_API_KEY env variable set, please set one", Reset)
+		return false
+	}
+	if *config.SchemaFilePath == "" && os.Getenv("SCHEMA_FILE_PATH") == "" {
+		fmt.Println(Red, "Niether SchemaFilePath flag nor SCHEMA_FILE_PATH env variable set, please set one", Reset)
+		return false
+	}
+	if *config.NodeVersion == "" && os.Getenv("NODE_VERSION") == "" {
+		fmt.Println(Red, "Niether NodeVersion flag nor NODE_VERSION env variable set, please set one", Reset)
+		return false
+	}
+	if os.Getenv("NODE_SETUP_URL") == "" {
+		fmt.Println(Red, "NODE_SETUP_URL env var not set...please set it to the desired version.", Reset)
+		return false
+	}
+	return true
 }

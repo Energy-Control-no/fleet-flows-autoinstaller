@@ -45,7 +45,9 @@ func Init() {
 	if *SchemaFilePath == "" {
 		*SchemaFilePath = os.Getenv("SCHEMA_FILE_PATH")
 	}
-	if *NodeVersion == "" {
+	// this will check if the flag isn't supplied and env is setup with a version
+	// it will replace the default flag version with the .env provided version
+	if *NodeVersion == "12.22.12-deb-1nodesource1" && os.Getenv("NODE_VERSION") != "" {
 		*NodeVersion = os.Getenv("NODE_VERSION")
 	}
 }

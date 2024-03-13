@@ -6,6 +6,7 @@ import (
 	gitops "installer/gitOps"
 	"installer/utility"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -13,12 +14,21 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println(utility.Red, ".env file wasn't found, looking at env variables", utility.Reset)
-		return
+		if strings.Contains(err.Error(), ".env: no such file or directory") {
+			fmt.Println(utility.Yellow, ".env file not found, checking to run with system variables...", utility.Reset)
+		} else {
+			fmt.Println(utility.Red, ".env file wasn't found, looking at env variables: ", err.Error(), utility.Reset)
+			return
+		}
 	}
 
 	// parsing flags to access them later
 	config.Init()
+
+	// env vars check
+	if !utility.EnvVariablesCheck() {
+		os.Exit(1)
+	}
 
 	// check if the user is root user or not
 	if !utility.CheckForElevatedPriveleges() {

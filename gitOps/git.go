@@ -116,7 +116,7 @@ func CheckGitAccessAndCloneIfAccess() {
 
 	log.Println(utility.Yellow, "calling ensureNodeRedInstalled().....", utility.Reset)
 	// ensure node-red installed
-	// utility.EnsureNodeRedInstalled() // disable node-red installation for now
+	utility.EnsureNodeRedInstalled() // enable node-red installation for now
 	// create service files
 	services.CreateServices()
 	fmt.Println(utility.BrightGreen, "Installation complete.", utility.Reset)
@@ -162,7 +162,11 @@ func CheckGitAccess(repository string) bool {
 	defer os.RemoveAll(tempDir) // Clean up the temporary directory when done
 
 	// Attempt to clone into the temporary directory
-	cmd := exec.Command("git", "clone", "-n", gitServer+"/"+os.Getenv("REPO_TO_CHECK_SERVER_ACCESS"), tempDir)
+	var repoTocheckAccessFrom = os.Getenv("REPO_TO_CHECK_SERVER_ACCESS")
+	if repoTocheckAccessFrom == "" {
+		repoTocheckAccessFrom = "fleet-files"
+	}
+	cmd := exec.Command("git", "clone", "-n", gitServer+"/"+repoTocheckAccessFrom, tempDir)
 	output, err := cmd.CombinedOutput()
 
 	if err == nil {
