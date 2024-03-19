@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	config "installer/configs"
@@ -411,10 +410,6 @@ func GenerateSSHKey(SSHKeyPath string) error {
 
 	// Encode private key to PEM format
 	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
-	privateKeyPEM := &pem.Block{
-		Type:  "RSA PRIVATE KEY",
-		Bytes: privateKeyBytes,
-	}
 
 	// Write private key to file
 	privateKeyFile, err := os.Create(SSHKeyPath)
@@ -422,7 +417,7 @@ func GenerateSSHKey(SSHKeyPath string) error {
 		log.Fatal("here while encodee", err, "SSH_KEY_PATH: ", SSHKeyPath)
 	}
 	defer privateKeyFile.Close()
-	err = pem.Encode(privateKeyFile, privateKeyPEM)
+	_, err = privateKeyFile.Write(privateKeyBytes)
 	if err != nil {
 		return err
 	}
@@ -437,11 +432,6 @@ func GenerateSSHKey(SSHKeyPath string) error {
 	if err != nil {
 		return err
 	}
-	publicKeyPEM := &pem.Block{
-		Type:  "RSA PUBLIC KEY",
-		Bytes: publicKeyBytes,
-	}
-
 	// Write public key to file
 	publicKeyPath := SSHKeyPath + ".pub"
 	publicKeyFile, err := os.Create(publicKeyPath)
@@ -449,7 +439,7 @@ func GenerateSSHKey(SSHKeyPath string) error {
 		return err
 	}
 	defer publicKeyFile.Close()
-	err = pem.Encode(publicKeyFile, publicKeyPEM)
+	_, err = publicKeyFile.Write(publicKeyBytes)
 	if err != nil {
 		return err
 	}
@@ -571,35 +561,35 @@ func ExtractNodeJsRepoVersion() {
 
 func EnvVariablesCheck() bool {
 	if *config.Repository == "" && os.Getenv("GIT_SERVER") == "" {
-		fmt.Println(Red, "Neither Repository flag nor GIT_SERVER env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether Repository flag nor GIT_SERVER env variable set, please set one", Reset)
 		return false
 	}
 	if *config.SoftwareBranch == "" && os.Getenv("FLOW_JS_BRANCH") == "" {
-		fmt.Println(Red, "Neither SoftwareBranch flag nor FLOW_JS_BRANCH env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether SoftwareBranch flag nor FLOW_JS_BRANCH env variable set, please set one", Reset)
 		return false
 	}
 	if *config.FilesBranch == "" && os.Getenv("FILES_BRANCH") == "" {
-		fmt.Println(Red, "Neither FilesBranch flag nor FILES_BRANCH env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether FilesBranch flag nor FILES_BRANCH env variable set, please set one", Reset)
 		return false
 	}
 	if *config.Base == "" && os.Getenv("AIRTABLE_BASE_ID") == "" {
-		fmt.Println(Red, "Neither Base flag nor AIRTABLE_BASE_ID env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether Base flag nor AIRTABLE_BASE_ID env variable set, please set one", Reset)
 		return false
 	}
 	if *config.Table == "" && os.Getenv("AIRTABLE_TABLE") == "" {
-		fmt.Println(Red, "Neither Table flag nor AIRTABLE_TABLE env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether Table flag nor AIRTABLE_TABLE env variable set, please set one", Reset)
 		return false
 	}
 	if *config.Key == "" && os.Getenv("AIRTABLE_API_KEY") == "" {
-		fmt.Println(Red, "Neither Key flag nor AIRTABLE_API_KEY env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether Key flag nor AIRTABLE_API_KEY env variable set, please set one", Reset)
 		return false
 	}
 	if *config.SchemaFilePath == "" && os.Getenv("SCHEMA_FILE_PATH") == "" {
-		fmt.Println(Red, "Neither SchemaFilePath flag nor SCHEMA_FILE_PATH env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether SchemaFilePath flag nor SCHEMA_FILE_PATH env variable set, please set one", Reset)
 		return false
 	}
 	if *config.NodeVersion == "" && os.Getenv("NODE_VERSION") == "" {
-		fmt.Println(Red, "Neither NodeVersion flag nor NODE_VERSION env variable set, please set one", Reset)
+		fmt.Println(Red, "Niether NodeVersion flag nor NODE_VERSION env variable set, please set one", Reset)
 		return false
 	}
 	if os.Getenv("NODE_SETUP_URL") == "" {

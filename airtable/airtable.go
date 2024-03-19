@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -126,11 +127,13 @@ func CreateAirtableRecord(hostname, sshKey string) error {
 		"records": []map[string]interface{}{
 			{
 				"fields": map[string]string{
-					// "Device id":      hostname,
 					"SSH Public Key": sshKey,
+					"type":           strings.Split(hostname, "-")[0],
+					"Unipi SN":       strings.Split(hostname, "-")[1],
 				},
 			},
 		},
+		"typecast": true, // set true for auto options addition
 	}
 	// log.Println("payload: ", payload)
 	payloadBytes, err := json.Marshal(payload)
@@ -155,15 +158,16 @@ func CreateAirtableRecord(hostname, sshKey string) error {
 	var resp *http.Response
 	for {
 		resp, err = client.Do(req)
-		if err != nil {
+		if err != nil || resp.StatusCode != http.StatusOK {
 			if maxTries == 0 {
 				utility.Logger(err, utility.Error)
-				fmt.Println(utility.Red, "Max retries exceeded...", err, utility.Reset)
+				fmt.Println(utility.Red, "Max retries exceeded...", utility.Reset)
 				break
 			}
 			fmt.Println(utility.BrightYellow, "Error sending request: retrying..", utility.Reset)
 			maxTries -= 1
 		}
+
 		if resp.StatusCode == http.StatusOK {
 			break
 		}
@@ -247,6 +251,73 @@ func FetchAirtableRecordIDBySSHKey(SSHKey string) (string, error) {
 	// If no record found, return an empty string
 	return "", nil
 }
+func FetchAirtableRecordIDByDeviceId(deviceId string) (string, error) {
+	maxTries, _ := strconv.Atoi(os.Getenv("MAX_RETRIES"))
+	// Encode the hostname to use in the URL
+	part2 := strings.Split(deviceId, "-")[1]
+	if len(part2) <= 2 {
+		part2 = "sn" + part2
+	}
+	if len(strings.Split(deviceId, "-")) > 2 {
+		deviceId = strings.Split(deviceId, "-")[0] + "-" + part2
+	}
+	encodedSSHKey := url.QueryEscape(deviceId)
+
+	// Construct the URL with the encoded hostname and filterByFormula parameter
+	url := fmt.Sprintf("https://api.airtable.com/v0/%s/%s?filterByFormula={Device%%20id}%%20=%%20'%s'", *config.Base, *config.Table, encodedSSHKey)
+
+	// Create a new HTTP GET request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+
+	// Set headers, including the Authorization header with the API key
+	req.Header.Set("Authorization", "Bearer "+*config.Key)
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send the HTTP request
+	// Added Timeout property to 10 seconds if server takes longer than this our program will exit
+	client := &http.Client{Timeout: 10 * time.Second}
+	var resp *http.Response
+	for {
+		resp, err = client.Do(req)
+		if err != nil {
+			if maxTries == 0 {
+				utility.Logger(err, utility.Error)
+				fmt.Println(utility.Red, "Max retries exceeded...", err, utility.Reset)
+				break
+			}
+			fmt.Println(utility.BrightYellow, "Error sending request: retrying..", utility.Reset)
+			maxTries -= 1
+		}
+		if resp.StatusCode == http.StatusOK {
+			break
+		}
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	// Parse the JSON response
+	var data map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		return "", err
+	}
+
+	// Extract the record ID from the response
+	records := data["records"].([]interface{})
+	if len(records) > 0 {
+		record := records[0].(map[string]interface{})
+		return record["id"].(string), nil
+	}
+
+	// If no record found, return an empty string
+	return "", nil
+}
 
 // Updates SSHKey in AIRTABLE
 func UpdateSSHKeyInAirtable() {
@@ -267,12 +338,12 @@ func UpdateSSHKeyInAirtable() {
 	// Convert bytes to string
 	publicKey := string(publicKeyBytes)
 	hostname, _ := os.Hostname()
-	recordId, err := FetchAirtableRecordIDBySSHKey(publicKey)
+	// recordId, err := FetchAirtableRecordIDBySSHKey(publicKey)
+	recordId, err := FetchAirtableRecordIDByDeviceId(hostname)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "Error fetching record id: ", err, utility.Reset)
 	}
-
 	if recordId != "" {
 		// updating existing record
 		log.Println("calling updateAirtableRecord().............")
