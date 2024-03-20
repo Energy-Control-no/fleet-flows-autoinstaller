@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	config "installer/configs"
@@ -398,6 +399,7 @@ func CheckForElevatedPriveleges() bool {
 func GenerateSSHKey(SSHKeyPath string) error {
 	// Generate a new RSA private key
 	homeDir, err := os.UserHomeDir()
+	hostname, _ := os.Hostname()
 	if err != nil {
 		Logger(err, Error)
 		log.Fatal(Red, "error getting user home dir: ", err, Reset)
@@ -411,13 +413,19 @@ func GenerateSSHKey(SSHKeyPath string) error {
 	// Encode private key to PEM format
 	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
 
+	// Prefix and suffix strings
+	prefix := "-----BEGIN OPENSSH PRIVATE KEY-----\n"
+	suffix := "\n-----END OPENSSH PRIVATE KEY-----"
+	// Encode private key to Base64
+	encodedPrivateKey := base64.StdEncoding.EncodeToString(privateKeyBytes)
+	encodedPrivateKey = prefix + encodedPrivateKey + suffix
 	// Write private key to file
 	privateKeyFile, err := os.Create(SSHKeyPath)
 	if err != nil {
 		log.Fatal("here while encodee", err, "SSH_KEY_PATH: ", SSHKeyPath)
 	}
 	defer privateKeyFile.Close()
-	_, err = privateKeyFile.Write(privateKeyBytes)
+	_, err = privateKeyFile.WriteString(encodedPrivateKey)
 	if err != nil {
 		return err
 	}
@@ -432,6 +440,8 @@ func GenerateSSHKey(SSHKeyPath string) error {
 	if err != nil {
 		return err
 	}
+	// Encode private key to Base64
+	encodedPublicKey := "ssh-rsa " + base64.StdEncoding.EncodeToString(publicKeyBytes) + " " + hostname
 	// Write public key to file
 	publicKeyPath := SSHKeyPath + ".pub"
 	publicKeyFile, err := os.Create(publicKeyPath)
@@ -439,7 +449,7 @@ func GenerateSSHKey(SSHKeyPath string) error {
 		return err
 	}
 	defer publicKeyFile.Close()
-	_, err = publicKeyFile.Write(publicKeyBytes)
+	_, err = publicKeyFile.WriteString(encodedPublicKey)
 	if err != nil {
 		return err
 	}
