@@ -414,8 +414,8 @@ func GenerateSSHKey(SSHKeyPath string) error {
 	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
 
 	// Prefix and suffix strings
-	prefix := "-----BEGIN OPENSSH PRIVATE KEY-----\n"
-	suffix := "\n-----END OPENSSH PRIVATE KEY-----"
+	prefix := "-----BEGIN RSA PRIVATE KEY-----\n"
+	suffix := "\n-----END RSA PRIVATE KEY-----\n"
 	// Encode private key to Base64
 	encodedPrivateKey := base64.StdEncoding.EncodeToString(privateKeyBytes)
 	encodedPrivateKey = prefix + encodedPrivateKey + suffix
