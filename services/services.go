@@ -16,13 +16,16 @@ import (
 // A function to create all the services one by one
 func CreateServices() {
 	// enable create & start services
-
+	utility.ErrorLog.Output(2, "calling createSystemdService()......")
 	fmt.Println(utility.Yellow, "calling createSystemdService()......", utility.Reset)
 	createSystemdService()
+	utility.ErrorLog.Output(2, "calling restartOnChanges()......")
 	fmt.Println(utility.Yellow, "calling restartOnChanges()......", utility.Reset)
 	restartOnChanges()
+	utility.ErrorLog.Output(2, "calling createFleetFlowJSListenerService()......")
 	fmt.Println(utility.Yellow, "calling createFleetFlowJSListenerService()......", utility.Reset)
 	createFleetFlowJSListenerService()
+	utility.ErrorLog.Output(2, "calling createAutoUpdateJob()......")
 	fmt.Println(utility.Yellow, "calling createAutoUpdateJob()......", utility.Reset)
 	createAutoUpdateJob()
 }
@@ -32,6 +35,7 @@ func createSystemdService() {
 	homeDir, err := os.UserHomeDir()
 	user, _ := user.Current()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error getting user's home directory: ", err, utility.Reset)
 	}
 
@@ -39,6 +43,7 @@ func createSystemdService() {
 	// serviceFilePath := "fleet-flows-js.service"
 	file, err := os.OpenFile(serviceFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating systemd service file: ", err, utility.Reset)
 	}
 
@@ -61,6 +66,7 @@ WantedBy=multi-user.target
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing to systemd service file: ", err, utility.Reset)
 	}
 
@@ -68,12 +74,14 @@ WantedBy=multi-user.target
 	cmd := exec.Command("sudo", "systemctl", "enable", "fleet-flows-js.service")
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error enabling systemd service: ", err, utility.Reset)
 	}
 
 	cmd = exec.Command("sudo", "systemctl", "start", "fleet-flows-js.service")
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error starting systemd service: ", err, utility.Reset)
 	}
 
@@ -126,6 +134,7 @@ monitor_and_restart
 	cmd := exec.Command("sudo", "chmod", "+rx", config.RestartScript)
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error changing permissions of restart script: ", err, utility.Reset)
 	}
 
@@ -142,6 +151,7 @@ func createFleetFlowJSListenerService() {
 	// Create the service file
 	file, err := os.Create(serviceFilePath)
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating systemd service file: ", err, utility.Reset)
 	}
 	defer file.Close()
@@ -166,6 +176,7 @@ WantedBy=multi-user.target
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing to systemd service file: ", err, utility.Reset)
 	}
 
@@ -173,6 +184,7 @@ WantedBy=multi-user.target
 	cmd := exec.Command("sudo", "systemctl", "daemon-reload")
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error reloading systemd daemon: ", err, utility.Reset)
 	}
 
@@ -180,12 +192,14 @@ WantedBy=multi-user.target
 	cmd = exec.Command("sudo", "systemctl", "enable", "fleet-flows-js-listener")
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error enabling systemd service: ", err, utility.Reset)
 	}
 
 	cmd = exec.Command("sudo", "systemctl", "start", "fleet-flows-js-listener")
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error starting systemd service: ", err, utility.Reset)
 	}
 
@@ -270,6 +284,7 @@ fi
 
 	err := ioutil.WriteFile(autoUpdaterScript, []byte(scriptContent), 0755)
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing auto-updater script: ", err, utility.Reset)
 	}
 
@@ -280,6 +295,7 @@ fi
 	cmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | crontab -", cronjob))
 	err = cmd.Run()
 	if err != nil {
+		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error setting up cronjob: ", err, utility.Reset)
 	}
 

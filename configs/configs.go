@@ -15,7 +15,7 @@ var (
 	Table             = flag.String("t", "", "airtable table name")
 	Key               = flag.String("k", "", "airtable API key")
 	SchemaFilePath    = flag.String("sf", "", "Schema File Path")
-	NodeVersion       = flag.String("n", "12.22.12-deb-1nodesource1", "node version")
+	NodeVersion       = flag.String("n", "12.22.12", "node version")
 	RestartScript     = "/usr/local/bin/restart_change_ffjs.sh"
 	AutoUpdaterScript = "/usr/local/bin/auto_updater_ffjs.sh"
 	LogFile           = "/var/log/auto_updater_ffjs.log"
@@ -47,7 +47,7 @@ func Init() {
 	}
 	// this will check if the flag isn't supplied and env is setup with a version
 	// it will replace the default flag version with the .env provided version
-	if *NodeVersion == "12.22.12-deb-1nodesource1" && os.Getenv("NODE_VERSION") != "" {
+	if *NodeVersion == "12.22.12" && os.Getenv("NODE_VERSION") != "" {
 		*NodeVersion = os.Getenv("NODE_VERSION")
 	}
 }

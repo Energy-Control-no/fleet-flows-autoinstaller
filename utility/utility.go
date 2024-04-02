@@ -2,10 +2,6 @@ package utility
 
 import (
 	"bufio"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	config "installer/configs"
@@ -65,6 +61,7 @@ func EnsureInstalled(commandName string) {
 	// Check if the command is available
 	_, err := exec.LookPath(commandName)
 	if err != nil {
+		ErrorLog.Output(2, "Installing "+commandName+" ...")
 		fmt.Printf(Yellow+"Installing %s...\n %s", commandName, Reset)
 		// Install the command using apt
 		installCmd := exec.Command("apt", "-y", "install", commandName)
@@ -80,7 +77,57 @@ func EnsureInstalled(commandName string) {
 	}
 }
 
-func checkAndInstallNodejs() {
+// func checkAndInstallNodejs() {
+// 	// check if curl exists on host
+// 	cmdCurl := exec.Command("curl", "-V")
+// 	_, err := cmdCurl.Output()
+// 	if err != nil {
+// 		fmt.Println(Yellow, "Installing Curl...", Reset)
+// 		cmdInstallCurl := exec.Command("sudo", "apt", "install", "curl", "-y")
+// 		output, err := cmdInstallCurl.Output()
+// 		if err == nil {
+// 			fmt.Println(Green, "Curl installed successfully.", Reset)
+// 		} else {
+// 			log.Fatal(Red, "Unable to install curl: ", string(output), Reset)
+// 		}
+// 	}
+// 	// install node version repo
+// 	cmdNodeRepo := exec.Command("bash", "-c", "curl -fsSL "+os.Getenv("NODE_SETUP_URL")+" | sudo -E bash -")
+// 	outputNodeRepo, err := cmdNodeRepo.CombinedOutput()
+// 	if err != nil {
+// 		log.Fatal(Red, "Unable to run curl to fetch node setup: ", string(outputNodeRepo), err, Reset)
+// 	}
+// 	fmt.Println(Yellow, "Installing nodejs version ", *config.NodeVersion, Reset)
+// 	// now install node-js
+// 	cmdNodejs := exec.Command("sudo", "apt", "install", "nodejs="+*config.NodeVersion, "-y")
+// 	outputNodejs, err := cmdNodejs.Output()
+// 	if err != nil {
+// 		log.Fatal(Red, "Unable to install nodejs version :", *config.NodeVersion, "output: ", string(outputNodejs), Reset)
+// 	}
+// 	fmt.Println(Green, "Installed nodejs version ", *config.NodeVersion, Reset)
+// }
+
+// helper function to check if node is installed,if not it installs it.
+func EnsureNodeInstalled() {
+
+	cmdNPM := exec.Command("node", "-v")
+	outputNPM, err := cmdNPM.Output()
+	if err != nil {
+		InstallN(false)
+		return
+	}
+	output := strings.TrimSpace(string(outputNPM))
+	if !strings.Contains(*config.NodeVersion, strings.Split(output, "v")[1]) {
+		// calling new function installN
+		InstallN(true)
+	} else {
+		fmt.Println(BrightGreen, "Nodejs already installed, version: ", output, Reset)
+	}
+
+}
+
+func InstallN(nodePresent bool) {
+	homeDir, _ := os.UserHomeDir()
 	// check if curl exists on host
 	cmdCurl := exec.Command("curl", "-V")
 	_, err := cmdCurl.Output()
@@ -94,60 +141,133 @@ func checkAndInstallNodejs() {
 			log.Fatal(Red, "Unable to install curl: ", string(output), Reset)
 		}
 	}
-	// install node version repo
-	cmdNodeRepo := exec.Command("bash", "-c", "curl -fsSL "+os.Getenv("NODE_SETUP_URL")+" | sudo -E bash -")
-	outputNodeRepo, err := cmdNodeRepo.CombinedOutput()
-	if err != nil {
-		log.Fatal(Red, "Unable to run curl to fetch node setup: ", string(outputNodeRepo), err, Reset)
-	}
-	fmt.Println(Yellow, "Installing nodejs version ", *config.NodeVersion, Reset)
-	// now install node-js
-	cmdNodejs := exec.Command("sudo", "apt", "install", "nodejs="+*config.NodeVersion, "-y")
-	outputNodejs, err := cmdNodejs.Output()
-	if err != nil {
-		log.Fatal(Red, "Unable to install nodejs version :", *config.NodeVersion, "output: ", string(outputNodejs), Reset)
-	}
-	fmt.Println(Green, "Installed nodejs version ", *config.NodeVersion, Reset)
-}
+	// case when node is not present
+	if !nodePresent {
+		err := CloneRepository("n.git", "master", os.Getenv("REPO_N_URL"))
+		if err != nil {
+			return
+		}
+		// now switch to directory n and execute command
+		// Run `make install` in `n` dir
+		NDir := filepath.Join(homeDir, "n")
+		log.Println(Yellow, "Changing to n dir.....", Reset)
+		err = os.Chdir(NDir)
+		if err != nil {
+			fmt.Println(Red, "Error changing directory to n directory:", err, Reset)
+			os.Exit(1)
+		}
+		// install make if not present
+		cmdNPM := exec.Command("make", "-v")
+		outputNPM, _ := cmdNPM.CombinedOutput()
+		output := string(outputNPM)
+		if strings.Contains(output, "command not found") || output == "" {
+			fmt.Println(Yellow, "installing make...", Reset)
 
-// helper function to check if node is installed,if not it installs it.
-func EnsureNodeInstalled() {
-
-	cmdNPM := exec.Command("node", "-v")
-	outputNPM, err := cmdNPM.Output()
-	if err != nil {
-		checkAndInstallNodejs()
-		return
-	}
-	output := string(outputNPM)
-	log.Println("output : ", output)
-
-	parts := strings.Split(output, "\n")
-	latestAvailableVersion := strings.Split(parts[0], "|")
-	log.Println("output: ", latestAvailableVersion[0])
-
-	versionNumber := strings.Split(latestAvailableVersion[0], ".")
-	// version number that is currently present on host
-	log.Println("version no: ", versionNumber[0])
-
-	versionTryingToInstallParts := strings.Split(*config.NodeVersion, ".")
-	// // matching it with the requirement
-	if !strings.Contains(versionNumber[0], versionTryingToInstallParts[0]) {
-		// uninstall nodejs on system
-		fmt.Println(Yellow, "Removing present node version and installing node version: ", *config.NodeVersion, Reset)
-		cmdNPM := exec.Command("sudo", "apt", "remove", "nodejs")
-		outputNPM, err := cmdNPM.Output()
-		if err == nil {
-			// install our nodejs version
-			checkAndInstallNodejs()
-		} else {
-			log.Fatal(Red, "Unable to remove previous node version and re-install: ", string(outputNPM), Reset)
+			cmd := exec.Command("apt", "install", "make")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err = cmd.Run()
+			if err != nil {
+				log.Fatal(Red, "unable to execute `make install`: ", err, Reset)
+			}
+			fmt.Println(Green, "make installed", Reset)
 		}
 
+		fmt.Println(Yellow, "Running make install in n...", Reset)
+		cmd := exec.Command("make", "install")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		if err != nil {
+
+			fmt.Println("Error running make install in n:", err)
+			os.Exit(1)
+		}
+		fmt.Println(BrightGreen, "n install completed successfully.", Reset)
 	} else {
-		fmt.Println(Green, "Node is already installed at version: ", *config.NodeVersion, Reset)
+		// install make if not present
+		cmdN := exec.Command("n", "-v")
+		outputN, _ := cmdN.Output()
+
+		output := string(outputN)
+		if strings.Contains(output, "command not found") {
+			// else when node is present we can directly install n using npm
+			fmt.Println(Yellow, "installing n...", Reset)
+			cmdN := exec.Command("npm", "install", "-g", "n", "-y")
+			outputN, err := cmdN.Output()
+			if err != nil {
+				log.Fatal(Red, "Unable to install n, error: ", err, Reset, Yellow, "output: ", string(outputN), Reset)
+			}
+			fmt.Println(BrightGreen, "n install completed successfully.", Reset)
+		}
+
+	}
+	fmt.Println(Yellow, "installing nodejs version ", *config.NodeVersion, Reset)
+	// install desired node version here
+	cmdNodeVersion := exec.Command("n", *config.NodeVersion, "-y")
+	outputNodeVersion, err := cmdNodeVersion.Output()
+	if err != nil {
+		log.Fatal(Red, "Unable to install nodejs, error: ", err, Reset, Yellow, "output: ", outputNodeVersion, Reset)
+	}
+	fmt.Println(BrightGreen, "nodejs installed", Reset)
+}
+
+func CloneRepository(repoName, branch string, gitServer string) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(Red, "Unable to get user home directory..", Reset)
+	}
+	repoPath := filepath.Join(homeDir, repoName) // Change this to the actual path
+
+	path := repoPath
+	if repoName == "n.git" {
+		path = filepath.Join(homeDir, strings.Split(repoName, ".")[0])
 	}
 
+	// Check if the repository directory already exists
+	if _, err := os.Stat(path); err == nil {
+		// Repository already exists, perform git pull
+		fmt.Printf("Repository %s already exists. Updating...\n ", repoName)
+
+		cmd := exec.Command("git", "pull", "--ff-only", "--recurse-submodules=yes")
+		cmd.Dir = path
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			fmt.Printf(Red+"Error updating repository %s: %v\n %s output: %s", repoName, err, output, Reset)
+			return fmt.Errorf("Git pull of %s error. Exiting...", repoName)
+		}
+		fmt.Printf(BrightGreen+"Repository %s updated successfully.\n %s", repoName, Reset)
+		return nil
+	}
+
+	for {
+		cmd := exec.Command("git", "clone", gitServer+"/"+repoName)
+		cmd.Dir = homeDir
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			fmt.Println(Red+"Error cloning repository ", repoName, string(output), err, Reset)
+			permDenied := FindPermissionDenied(string(output))
+			if permDenied {
+				fmt.Printf("Git clone of %s failed. Retrying...\n", repoName)
+				time.Sleep(60 * time.Second) // Wait for a minute before retrying
+				continue
+			} else {
+				return fmt.Errorf("Git clone of %s error. Exiting...", repoName)
+			}
+		} else {
+			fmt.Printf(BrightGreen+"Repository %s cloned successfully.\n %s", repoName, string(output), Reset)
+			break
+		}
+	}
+	return nil
+}
+func FindPermissionDenied(output string) bool {
+	// Check if the output contains "Permissions denied"
+	if _, err := fmt.Sscanf(output, "%s", "Permissions denied"); err == nil {
+		return true
+	}
+	return false
 }
 
 // Function to fetch script & return as string
@@ -170,6 +290,7 @@ func FetchScript(url string) (string, error) {
 func EnsureNodeRedInstalled() {
 	nRedCmd, err := exec.LookPath("node-red")
 	if err != nil {
+		ErrorLog.Output(2, "Node-RED is not installed. Installing...")
 		fmt.Println(Yellow, "Node-RED is not installed. Installing...", Reset)
 
 		// Execute the node-red install command
@@ -193,6 +314,7 @@ func EnsureNodeRedInstalled() {
 
 		fmt.Println(BrightGreen, "Node-RED installed successfully: ", nRedCmd, Reset)
 	} else {
+		ErrorLog.Output(2, "Node-RED is installed at: "+nRedCmd)
 		fmt.Println(BrightGreen, "Node-RED is installed at: ", nRedCmd, Reset)
 		// create backup of flows.json as flows-backup.json and save it in home dir
 		// function call
@@ -215,11 +337,13 @@ func makeFlowsBackupJson() {
 	// Read the content of flows.json
 	flowsContent, err := ioutil.ReadFile(flowsFilePath)
 	if err != nil {
+		Logger(err, Error)
 		log.Fatal(Red, "Failed to read flows.json: \n", err, Reset)
 	}
 
 	home, err := os.UserHomeDir()
 	if err != nil {
+		Logger(err, Error)
 		log.Fatal(Red, "Unable to get home directory: ", err, Reset)
 	}
 	// Define the backup file path (e.g., home directory)
@@ -228,6 +352,7 @@ func makeFlowsBackupJson() {
 	// Write flows.json content to flows-backup.json
 	err = ioutil.WriteFile(backupFilePath, flowsContent, 0644)
 	if err != nil {
+		Logger(err, Error)
 		log.Fatal(Red, "Failed to write to flows-backup.json: \n", err, Reset)
 	}
 
@@ -237,16 +362,26 @@ func makeFlowsBackupJson() {
 /*Go:Open file for Log Critical Error Message */
 func OpenLogFile() *os.File {
 	currentDir, _ := os.Getwd()
-	loggedErrorPath := currentDir + "/"
-	logFileURI := loggedErrorPath + "Errorlogged.txt"
-	LogFile, err := os.OpenFile(logFileURI, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
+
+	// Get current date in the format "02_01_2006" (day_month_year)
+	currentDate := time.Now().Format("02_01_2006")
+
+	// Construct log file name with current date
+	logFileURI := fmt.Sprintf("%s/auto_installer_log_%s.txt", currentDir, currentDate)
+
+	// Open or create the log file
+	logFile, err := os.OpenFile(logFileURI, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
 	if err != nil {
 		fmt.Println(Red+"Error Log File: ", err, Reset)
 	}
-	ErrorLog = log.New(LogFile, "", log.Llongfile|log.LstdFlags) // set new logger ErrorLog because of Logger is Reserved word
 
-	// fmt.Println("Log File Open: ", logFileURI)
-	return LogFile
+	// Initialize logger with the log file
+	ErrorLog = log.New(logFile, "", log.Llongfile|log.LstdFlags)
+
+	// Print a message indicating successful opening of log file
+	fmt.Println(BrightYellow, "Log File Opened: ", logFileURI, Reset)
+
+	return logFile
 }
 
 /* Go: Log Critical Error Message on file if CI_ENVIRONMENT is production in env file then send email to EMAIL_FOR_CRITICAL_ERROR */
@@ -395,69 +530,6 @@ func CheckForElevatedPriveleges() bool {
 	return true
 }
 
-// Generates a new SSH Key
-func GenerateSSHKey(SSHKeyPath string) error {
-	// Generate a new RSA private key
-	homeDir, err := os.UserHomeDir()
-	hostname, _ := os.Hostname()
-	if err != nil {
-		Logger(err, Error)
-		log.Fatal(Red, "error getting user home dir: ", err, Reset)
-	}
-	SSHKeyPath = filepath.Join(homeDir, SSHKeyPath)
-	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
-	if err != nil {
-		return err
-	}
-
-	// Encode private key to PEM format
-	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
-
-	// Prefix and suffix strings
-	prefix := "-----BEGIN RSA PRIVATE KEY-----\n"
-	suffix := "\n-----END RSA PRIVATE KEY-----\n"
-	// Encode private key to Base64
-	encodedPrivateKey := base64.StdEncoding.EncodeToString(privateKeyBytes)
-	encodedPrivateKey = prefix + encodedPrivateKey + suffix
-	// Write private key to file
-	privateKeyFile, err := os.Create(SSHKeyPath)
-	if err != nil {
-		log.Fatal("here while encodee", err, "SSH_KEY_PATH: ", SSHKeyPath)
-	}
-	defer privateKeyFile.Close()
-	_, err = privateKeyFile.WriteString(encodedPrivateKey)
-	if err != nil {
-		return err
-	}
-	// fix permissions
-	err = fixKeyFilePermissions(SSHKeyPath)
-	if err != nil {
-		return err
-	}
-	// Generate public key from private key
-	publicKey := privateKey.PublicKey
-	publicKeyBytes, err := x509.MarshalPKIXPublicKey(&publicKey)
-	if err != nil {
-		return err
-	}
-	// Encode private key to Base64
-	encodedPublicKey := "ssh-rsa " + base64.StdEncoding.EncodeToString(publicKeyBytes) + " " + hostname
-	// Write public key to file
-	publicKeyPath := SSHKeyPath + ".pub"
-	publicKeyFile, err := os.Create(publicKeyPath)
-	if err != nil {
-		return err
-	}
-	defer publicKeyFile.Close()
-	_, err = publicKeyFile.WriteString(encodedPublicKey)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("SSH key pair generated successfully.")
-	return nil
-}
-
 func fixKeyFilePermissions(path string) error {
 	// Get the current user's UID and GID
 	currentUser, err := user.Current()
@@ -489,6 +561,30 @@ func fixKeyFilePermissions(path string) error {
 
 	return nil
 }
+
+// -------------------------S S H  T E S T  C O D E  B E G I N-----------------------------------------
+func GenerateSSHKey(SSHKeyPath string) error {
+	// homedir
+	homeDir, _ := os.UserHomeDir()
+
+	// Command to execute
+	cmd := exec.Command("ssh-keygen", "-t", "rsa", "-q", "-f", homeDir+"/.ssh/id_rsa", "-N", "")
+
+	// Set environment variable to expand $HOME
+	cmd.Env = append(os.Environ(), "HOME="+os.Getenv("HOME"))
+
+	cmdOutput, err := cmd.CombinedOutput()
+	if err != nil {
+		Logger(err, Error)
+		log.Fatal("Error executing ssh-keygen:", err, "output: ", string(cmdOutput))
+	}
+
+	fmt.Println(Green, "SSH key pair generated successfully.", Reset)
+	return nil
+}
+
+// -------------------------S S H  T E S T  C O D E  E N D-----------------------------------------
+
 func StringInArray(target string, arr []string) bool {
 	// Can change to slices.Contain if we're targetting 1.21+
 	for _, s := range arr {
