@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"strings"
 )
 
 // All functions to create services
@@ -38,7 +39,10 @@ func createSystemdService() {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error getting user's home directory: ", err, utility.Reset)
 	}
-
+	npmLocation, err := findNpmLocation()
+	if err != nil {
+		log.Fatal("error finding npm location, please provide it yourself: ", err)
+	}
 	serviceFilePath := "/etc/systemd/system/fleet-flows-js.service"
 	// serviceFilePath := "fleet-flows-js.service"
 	file, err := os.OpenFile(serviceFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
@@ -54,7 +58,7 @@ Description=OTA flow updates and flow compiling
 After=network.target
 
 [Service]
-ExecStart=/bin/npm run start --force
+ExecStart=%s run start --force
 WorkingDirectory=%s/fleet-flows-js
 Restart=always
 User=%s
@@ -62,7 +66,7 @@ KillSignal=SIGINT
 
 [Install]
 WantedBy=multi-user.target
-`, homeDir, user.Username)
+`,npmLocation, homeDir, user.Username)
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
@@ -88,7 +92,17 @@ WantedBy=multi-user.target
 	fmt.Println("Systemd service created, enabled, and started successfully.")
 
 }
+func findNpmLocation() (string, error) {
+	cmd := exec.Command("whereis", "npm")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
 
+	// Extracting the location from the output
+	location := strings.Fields(string(output))[1]
+	return location, nil
+}
 // creates a restart script that monitors any changes in fleet-files and restarts the node-red-helper
 func restartOnChanges() {
 	homeDir, _ := os.UserHomeDir()
