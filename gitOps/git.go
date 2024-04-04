@@ -283,7 +283,7 @@ func CreateEnvFile() {
 	SCHEMA_FILE_PATH=%s
 	NODE_RED_DIRECTORY=%s/
 	CONFIGS_DIR=%s/fleet-files/config
-	RESTART_COMMAND='find %s/fleet-files -maxdepth 1 -type f -exec cp {} %s/.node-red/ \; && sudo killall node-red && node-red'
+	RESTART_COMMAND='find %s/fleet-files -maxdepth 1 -type f -exec cp {} %s/.node-red/ \; && sudo killall node-red & node-red'
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
 	err = ioutil.WriteFile(envFilePath, envContent, 0644)
 	if err != nil {
