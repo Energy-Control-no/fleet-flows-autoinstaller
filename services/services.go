@@ -54,11 +54,11 @@ func createSystemdService() {
 	defer file.Close()
 
 	serviceContent := fmt.Sprintf(`[Unit]
-Description=OTA flow updates and flow compiling
+Description=OTA flow updates and flow compiling for node-red
 After=network.target
 
 [Service]
-ExecStart=%s run start --force
+ExecStart=%s run start--force
 WorkingDirectory=%s/fleet-flows-js
 Restart=always
 User=%s
@@ -73,7 +73,6 @@ WantedBy=multi-user.target
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing to systemd service file: ", err, utility.Reset)
 	}
-
 	// Enable and start the service
 	cmd := exec.Command("sudo", "systemctl", "enable", "fleet-flows-js.service")
 	err = cmd.Run()
