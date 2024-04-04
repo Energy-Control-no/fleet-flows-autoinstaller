@@ -698,9 +698,9 @@ func EnvVariablesCheck() bool {
 		fmt.Println(Red, "Niether NodeVersion flag nor NODE_VERSION env variable set, please set one", Reset)
 		return false
 	}
-	if os.Getenv("NODE_SETUP_URL") == "" {
-		fmt.Println(Red, "NODE_SETUP_URL env var not set...please set it to the desired version.", Reset)
-		return false
+	//if os.Getenv("NODE_SETUP_URL") == "" {
+	//	fmt.Println(Red, "NODE_SETUP_URL env var not set...please set it to the desired version.", Reset)
+	//	return false
 	}
 	return true
 }
