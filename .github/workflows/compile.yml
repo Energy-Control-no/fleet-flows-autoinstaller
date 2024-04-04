@@ -11,7 +11,7 @@ jobs:
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
    # Specify the environment to use its variables
-    environment: release
+
 
     steps:
     - name: Set up Go
