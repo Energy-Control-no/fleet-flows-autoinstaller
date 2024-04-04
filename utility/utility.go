@@ -302,7 +302,7 @@ func EnsureNodeRedInstalled() {
 		// Check for error and log the actual error message
 		if err != nil {
 			// Log or print the combined output for debugging purposes
-			log.Println(Debug, "combinet output: ", string(combinedOutput))
+			log.Println(Debug, "combined output: ", string(combinedOutput))
 			if exitError, ok := err.(*exec.ExitError); ok {
 				// The command exited with a non-zero status
 				stderr := exitError.Stderr
@@ -330,7 +330,7 @@ func makeFlowsBackupJson() {
 	flowsFilePath := filepath.Join(nodeRedDir, "flows.json")
 	_, err := os.Stat(flowsFilePath)
 	if os.IsNotExist(err) {
-		fmt.Println(Yellow, "flows.json not found in Node-RED directory! Not making any backup", Reset)
+		fmt.Println(Yellow, "flows.json not found in Node-RED directory! Not making any backups.", Reset)
 		return
 	}
 
@@ -353,7 +353,7 @@ func makeFlowsBackupJson() {
 	err = ioutil.WriteFile(backupFilePath, flowsContent, 0644)
 	if err != nil {
 		Logger(err, Error)
-		log.Fatal(Red, "Failed to write to flows-backup.json: \n", err, Reset)
+		log.Fatal(Red, "Failed to write flows-backup.json: \n", err, Reset)
 	}
 
 	fmt.Println(Green, "Backup of flows.json created successfully at ->", flowsFilePath, Reset)
@@ -602,13 +602,13 @@ func CheckFlags(args []string) bool {
 
 		for i, arg := range args[1:] {
 			if arg[0] != '-' {
-				log.Println(Red, "Inavlid arguement passed at", i, ": ", arg, Reset)
+				log.Println(Red, "Invalid argument passed at", i, ": ", arg, Reset)
 				printAvailableFlags()
 				return false
 			}
 			parts := strings.Split(arg, "=")
 			if !StringInArray(parts[0], allowedFlags) {
-				log.Println(Red, "Inavlid flag passed at", i, ": ", arg, Reset)
+				log.Println(Red, "Invalid flag passed at", i, ": ", arg, Reset)
 				printAvailableFlags()
 				return false
 			}
@@ -667,35 +667,35 @@ func ExtractNodeJsRepoVersion() {
 
 func EnvVariablesCheck() bool {
 	if *config.Repository == "" && os.Getenv("GIT_SERVER") == "" {
-		fmt.Println(Red, "Niether Repository flag nor GIT_SERVER env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither Repository flag nor GIT_SERVER env variable set, please set one", Reset)
 		return false
 	}
 	if *config.SoftwareBranch == "" && os.Getenv("FLOW_JS_BRANCH") == "" {
-		fmt.Println(Red, "Niether SoftwareBranch flag nor FLOW_JS_BRANCH env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither SoftwareBranch flag nor FLOW_JS_BRANCH env variable set, please set one", Reset)
 		return false
 	}
 	if *config.FilesBranch == "" && os.Getenv("FILES_BRANCH") == "" {
-		fmt.Println(Red, "Niether FilesBranch flag nor FILES_BRANCH env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither FilesBranch flag nor FILES_BRANCH env variable set, please set one", Reset)
 		return false
 	}
 	if *config.Base == "" && os.Getenv("AIRTABLE_BASE_ID") == "" {
-		fmt.Println(Red, "Niether Base flag nor AIRTABLE_BASE_ID env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither Base flag nor AIRTABLE_BASE_ID env variable set, please set one", Reset)
 		return false
 	}
 	if *config.Table == "" && os.Getenv("AIRTABLE_TABLE") == "" {
-		fmt.Println(Red, "Niether Table flag nor AIRTABLE_TABLE env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither Table flag nor AIRTABLE_TABLE env variable set, please set one", Reset)
 		return false
 	}
 	if *config.Key == "" && os.Getenv("AIRTABLE_API_KEY") == "" {
-		fmt.Println(Red, "Niether Key flag nor AIRTABLE_API_KEY env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither Key flag nor AIRTABLE_API_KEY env variable set, please set one", Reset)
 		return false
 	}
 	if *config.SchemaFilePath == "" && os.Getenv("SCHEMA_FILE_PATH") == "" {
-		fmt.Println(Red, "Niether SchemaFilePath flag nor SCHEMA_FILE_PATH env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither SchemaFilePath flag nor SCHEMA_FILE_PATH env variable set, please set one", Reset)
 		return false
 	}
 	if *config.NodeVersion == "" && os.Getenv("NODE_VERSION") == "" {
-		fmt.Println(Red, "Niether NodeVersion flag nor NODE_VERSION env variable set, please set one", Reset)
+		fmt.Println(Red, "Neither NodeVersion flag nor NODE_VERSION env variable set, please set one", Reset)
 		return false
 	}
 	//if os.Getenv("NODE_SETUP_URL") == "" {
