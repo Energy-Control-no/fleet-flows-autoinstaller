@@ -143,7 +143,7 @@ func InstallN(nodePresent bool) {
 	}
 	// case when node is not present
 	if !nodePresent {
-		err := CloneRepository("n.git", "master", os.Getenv("REPO_N_URL"))
+		err := CloneRepository("n.git", "master", os.Getenv("GIT_SERVER"))
 		if err != nil {
 			return
 		}
