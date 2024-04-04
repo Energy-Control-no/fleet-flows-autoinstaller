@@ -701,6 +701,6 @@ func EnvVariablesCheck() bool {
 	//if os.Getenv("NODE_SETUP_URL") == "" {
 	//	fmt.Println(Red, "NODE_SETUP_URL env var not set...please set it to the desired version.", Reset)
 	//	return false
-	}
+	//}
 	return true
 }
