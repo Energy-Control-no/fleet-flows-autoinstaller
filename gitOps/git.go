@@ -338,13 +338,13 @@ func CreateSchemaFile() {
 
 // switches directories to clone repositories and runs npm install to set them up.
 func SwitchDirectoriesAndCloneRepos() {
-	utility.ErrorLog.Output(2, "switching directories.....")
-	fmt.Println(utility.Yellow + "switching directories....." + utility.Reset)
+	utility.ErrorLog.Output(2, "Switching directories.....")
+	fmt.Println(utility.Yellow + "Switching directories....." + utility.Reset)
 	// after all this is done now we switch directories
 	// getting users home dir
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Println("Error getting user home directory:", err)
+		fmt.Println("Error getting users home directory:", err)
 		os.Exit(1)
 	}
 
