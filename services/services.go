@@ -93,8 +93,8 @@ WantedBy=multi-user.target
 func restartOnChanges() {
 	homeDir, _ := os.UserHomeDir()
 	// Define restart script path
-	projectDir := homeDir + "fleet-flows-js"
-	logFile := homeDir + "restart_change_ffjs.log"
+	projectDir := homeDir + "/fleet-flows-js"
+	logFile := homeDir + "/restart_change_ffjs.log"
 
 	// Write script content to file
 	scriptContent := fmt.Sprintf(`#!/bin/bash
