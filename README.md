@@ -60,3 +60,4 @@
 ## Pre-requisites
 > apt install ca-certificates -y
 > apt install tzdata
+> make sure n (version manager) is cloned on the remote git server
