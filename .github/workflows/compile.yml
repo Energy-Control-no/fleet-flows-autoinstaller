@@ -24,7 +24,7 @@ jobs:
 
     - name: Build
       run: |
-        go build -v -o installer ./main.go
+        GOOS=linux GOARCH=arm64 go build -v -o installer ./main.go
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
