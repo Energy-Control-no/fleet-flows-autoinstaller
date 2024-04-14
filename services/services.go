@@ -33,12 +33,15 @@ func CreateServices() {
 
 // creates a systemd service names fleet-flows-js.service for running node-red-helper
 func createSystemdService() {
-	homeDir, err := os.UserHomeDir()
+	//homeDir, err := os.UserHomeDir()
+	homeDir := os.Getenv("HOME_DIR")
 	user, _ := user.Current()
-	if err != nil {
-		utility.Logger(err, utility.Error)
-		log.Fatal(utility.Red, "error getting user's home directory: ", err, utility.Reset)
-	}
+	/*
+		if err != nil {
+			utility.Logger(err, utility.Error)
+			log.Fatal(utility.Red, "error getting user's home directory: ", err, utility.Reset)
+		}
+	*/
 	npmLocation, err := findNpmLocation()
 	if err != nil {
 		log.Fatal("error finding npm location, please provide it yourself: ", err)
@@ -49,6 +52,10 @@ func createSystemdService() {
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating systemd service file: ", err, utility.Reset)
+	}
+	err = utility.SetPermissions(serviceFilePath)
+	if err != nil {
+		fmt.Println(utility.Yellow, "error setting permission for systemd file: ", err, utility.Reset)
 	}
 
 	defer file.Close()
@@ -66,7 +73,7 @@ KillSignal=SIGINT
 
 [Install]
 WantedBy=multi-user.target
-`,npmLocation, homeDir, user.Username)
+`, npmLocation, homeDir, user.Username)
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
@@ -102,9 +109,11 @@ func findNpmLocation() (string, error) {
 	location := strings.Fields(string(output))[1]
 	return location, nil
 }
+
 // creates a restart script that monitors any changes in fleet-files and restarts the node-red-helper
 func restartOnChanges() {
-	homeDir, _ := os.UserHomeDir()
+	//homeDir, _ := os.UserHomeDir()
+	homeDir := os.Getenv("HOME_DIR")
 	// Define restart script path
 	projectDir := homeDir + "/fleet-flows-js"
 	logFile := homeDir + "/restart_change_ffjs.log"
@@ -138,7 +147,7 @@ monitor_and_restart() {
 monitor_and_restart
 `, projectDir, logFile)
 
-	err := ioutil.WriteFile(config.RestartScript, []byte(scriptContent), 0755)
+	err := ioutil.WriteFile(config.RestartScript, []byte(scriptContent), 0777)
 	if err != nil {
 		log.Fatal(utility.Red, "error writing restart script: ", err, utility.Reset)
 	}
@@ -223,7 +232,8 @@ func createAutoUpdateJob() {
 	// Define auto-updater script path
 	autoUpdaterScript := config.AutoUpdaterScript
 	// logFile := LOG_FILE
-	homeDir, _ := os.UserHomeDir()
+	//homeDir, _ := os.UserHomeDir()
+	homeDir := os.Getenv("HOME_DIR")
 
 	// Write script content to file
 	scriptContent := fmt.Sprintf(`#!/bin/bash
@@ -295,7 +305,7 @@ else
 fi
 `, homeDir, homeDir, *config.Repository, *config.FilesBranch)
 
-	err := ioutil.WriteFile(autoUpdaterScript, []byte(scriptContent), 0755)
+	err := ioutil.WriteFile(autoUpdaterScript, []byte(scriptContent), 0777)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing auto-updater script: ", err, utility.Reset)

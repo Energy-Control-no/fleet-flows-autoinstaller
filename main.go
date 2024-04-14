@@ -43,6 +43,7 @@ func main() {
 	utility.LogFile = utility.OpenLogFile()
 
 	// ensuring neccesary tools installed
+	utility.ErrorLog.Output(2, "calling ensureInstalled() for [inotify-tools,git,jq,nano].....")
 	fmt.Println(utility.Yellow, "calling ensureInstalled() for [inotify-tools,git,jq,nano].....", utility.Reset)
 
 	utility.EnsureInstalled("inotify-tools")

@@ -82,6 +82,11 @@ func CheckGitAccessAndCloneIfAccess() {
 				if err1 == nil {
 					utility.ErrorLog.Output(2, "SSH key file already exists.")
 					fmt.Println(utility.Yellow + "SSH key file already exists." + utility.Reset)
+					fmt.Println(utility.Yellow + "Replicating the same keys in " + os.Getenv("HOME_DIR") + utility.Reset)
+					err := utility.CopyDir(homeDir+"/"+".ssh", os.Getenv("HOME_DIR")+"/.ssh")
+					if err != nil {
+						log.Fatal(utility.Red+"Error while replicating ssh keys in", os.Getenv("HOME_DIR"), "error: ", err, utility.Reset)
+					}
 					// if already exists update it in Air Table
 					utility.ErrorLog.Output(2, "calling updateSSHKeyInAirtable()...")
 					fmt.Println(utility.Yellow + "calling updateSSHKeyInAirtable()..." + utility.Reset)
@@ -97,6 +102,10 @@ func CheckGitAccessAndCloneIfAccess() {
 					if err != nil {
 						utility.Logger(err, utility.Error)
 						log.Fatal(utility.Red+"Error while generating PUB SSH KEY: ", err, utility.Reset)
+					}
+					err = utility.CopyDir(homeDir+"/"+".ssh", os.Getenv("HOME_DIR")+"/.ssh")
+					if err != nil {
+						log.Fatal(utility.Red+"Error while replicating ssh keys in", os.Getenv("HOME_DIR"), "error: ", err, utility.Reset)
 					}
 					utility.ErrorLog.Output(2, "calling updateSSHKeyInAirtable()...")
 					fmt.Println(utility.Yellow + "calling updateSSHKeyInAirtable()..." + utility.Reset)
@@ -193,10 +202,11 @@ func FindPermissionDenied(output string) bool {
 // Runs the `git clone` command and clones repos
 func CloneRepository(repoName, branch string, gitServer string) error {
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(utility.Red, "Unable to get user home directory..", utility.Reset)
-	}
+	//homeDir, err := os.UserHomeDir()
+	//if err != nil {
+	//	log.Fatal(utility.Red, "Unable to get user home directory..", utility.Reset)
+	//}
+	homeDir := os.Getenv("HOME_DIR")
 	repoPath := filepath.Join(homeDir, repoName) // Change this to the actual path
 
 	// Check if the repository directory already exists
@@ -211,6 +221,10 @@ func CloneRepository(repoName, branch string, gitServer string) error {
 		if err != nil {
 			fmt.Printf(utility.Red+"Error updating repository %s: %v\n %s", repoName, err, utility.Reset)
 			return fmt.Errorf("Git pull of %s error. Exiting...", repoName)
+		}
+		err = utility.SetPermissions(repoPath)
+		if err != nil {
+			return err
 		}
 
 		fmt.Printf(utility.BrightGreen+"Repository %s updated successfully.\n %s", repoName, utility.Reset)
@@ -234,19 +248,24 @@ func CloneRepository(repoName, branch string, gitServer string) error {
 			break
 		}
 	}
+	err := utility.SetPermissions(repoPath)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func CreateEnvFile() {
 	// get home dir of user
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		utility.Logger(err, utility.Error)
-		log.Println(utility.Red, "error getting user home dir: ", err, utility.Reset)
-	}
+	//homeDir, err := os.UserHomeDir()
+	//if err != nil {
+	//	utility.Logger(err, utility.Error)
+	//	log.Println(utility.Red, "error getting user home dir: ", err, utility.Reset)
+	//}
+	homeDir := os.Getenv("HOME_DIR")
 	fleetFlowsJsDir := filepath.Join(homeDir, "fleet-flows-js")
 	// changing dir to fleet-flows-js dir
-	err = os.Chdir(fleetFlowsJsDir)
+	err := os.Chdir(fleetFlowsJsDir)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		fmt.Println(utility.Red, "Error changing directory to fleet-flows-js directory:", err, utility.Reset)
@@ -285,7 +304,7 @@ func CreateEnvFile() {
 	CONFIGS_DIR=%s/fleet-files/config
 	RESTART_COMMAND='find %s/fleet-files -maxdepth 1 -type f -exec cp {} %s/.node-red/ \; && sudo killall node-red & node-red'
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
-	err = ioutil.WriteFile(envFilePath, envContent, 0644)
+	err = ioutil.WriteFile(envFilePath, envContent, 0777)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating environment file: ", err, utility.Reset)
@@ -294,14 +313,17 @@ func CreateEnvFile() {
 }
 func CreateSchemaFile() {
 	// get home dir of user
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		utility.Logger(err, utility.Error)
-		log.Println(utility.Red, "error getting user home dir: ", err, utility.Reset)
-	}
+	/*
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			utility.Logger(err, utility.Error)
+			log.Println(utility.Red, "error getting user home dir: ", err, utility.Reset)
+		}
+	*/
+	homeDir := os.Getenv("HOME_DIR")
 	fleetFlowsJsDir := filepath.Join(homeDir, "fleet-flows-js")
 	// changing dir to fleet-flows-js dir
-	err = os.Chdir(fleetFlowsJsDir)
+	err := os.Chdir(fleetFlowsJsDir)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		fmt.Println(utility.Red, "Error changing directory to fleet-flows-js directory:", err, utility.Reset)
@@ -328,7 +350,7 @@ func CreateSchemaFile() {
 		  	- basedOn: "flow://welcome"
 			- description: "Welcome to Fleet-Flows"
 	`))
-	err = ioutil.WriteFile(schemaFilePath, schemaContent, 0644)
+	err = ioutil.WriteFile(schemaFilePath, schemaContent, 0777)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating schema file: ", err, utility.Reset)
@@ -342,16 +364,19 @@ func SwitchDirectoriesAndCloneRepos() {
 	fmt.Println(utility.Yellow + "Switching directories....." + utility.Reset)
 	// after all this is done now we switch directories
 	// getting users home dir
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		fmt.Println("Error getting users home directory:", err)
-		os.Exit(1)
-	}
+	/*
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println("Error getting users home directory:", err)
+			os.Exit(1)
+		}
+	*/
+	homeDir := os.Getenv("HOME_DIR")
 
 	// temporarily switching directories to clone repos
 	// Change directory to home directory
 	fmt.Println(utility.Yellow + "Changing to home dir....." + utility.Reset)
-	err = os.Chdir(homeDir)
+	err := os.Chdir(homeDir)
 	if err != nil {
 		fmt.Println("Error changing directory to home directory:", err)
 		os.Exit(1)

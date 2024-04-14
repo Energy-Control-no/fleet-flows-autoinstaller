@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	config "installer/configs"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -127,7 +128,8 @@ func EnsureNodeInstalled() {
 }
 
 func InstallN(nodePresent bool) {
-	homeDir, _ := os.UserHomeDir()
+	//homeDir, _ := os.UserHomeDir()
+	homeDir := os.Getenv("HOME_DIR")
 	// check if curl exists on host
 	cmdCurl := exec.Command("curl", "-V")
 	_, err := cmdCurl.Output()
@@ -213,10 +215,13 @@ func InstallN(nodePresent bool) {
 }
 
 func CloneRepository(repoName, branch string, gitServer string) error {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(Red, "Unable to get user home directory..", Reset)
-	}
+	/*
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal(Red, "Unable to get user home directory..", Reset)
+		}
+	*/
+	homeDir := os.Getenv("HOME_DIR")
 	repoPath := filepath.Join(homeDir, repoName) // Change this to the actual path
 
 	path := repoPath
@@ -259,6 +264,10 @@ func CloneRepository(repoName, branch string, gitServer string) error {
 			fmt.Printf(BrightGreen+"Repository %s cloned successfully.\n %s", repoName, string(output), Reset)
 			break
 		}
+	}
+	err := SetPermissions(path)
+	if err != nil {
+		fmt.Println(Yellow, "error setting permission for systemd file: ", err, Reset)
 	}
 	return nil
 }
@@ -341,16 +350,19 @@ func makeFlowsBackupJson() {
 		log.Fatal(Red, "Failed to read flows.json: \n", err, Reset)
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		Logger(err, Error)
-		log.Fatal(Red, "Unable to get home directory: ", err, Reset)
-	}
+	/*
+		home, err := os.UserHomeDir()
+		if err != nil {
+			Logger(err, Error)
+			log.Fatal(Red, "Unable to get home directory: ", err, Reset)
+		}
+	*/
+	homeDir := os.Getenv("HOME_DIR")
 	// Define the backup file path (e.g., home directory)
-	backupFilePath := filepath.Join(home, "flows-backup.json")
+	backupFilePath := filepath.Join(homeDir, "flows-backup.json")
 
 	// Write flows.json content to flows-backup.json
-	err = ioutil.WriteFile(backupFilePath, flowsContent, 0644)
+	err = ioutil.WriteFile(backupFilePath, flowsContent, 0777)
 	if err != nil {
 		Logger(err, Error)
 		log.Fatal(Red, "Failed to write flows-backup.json: \n", err, Reset)
@@ -565,7 +577,10 @@ func fixKeyFilePermissions(path string) error {
 // -------------------------S S H  T E S T  C O D E  B E G I N-----------------------------------------
 func GenerateSSHKey(SSHKeyPath string) error {
 	// homedir
-	homeDir, _ := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(Red, "Unable to get user home directory..", Reset)
+	}
 
 	// Command to execute
 	cmd := exec.Command("ssh-keygen", "-t", "rsa", "-q", "-f", homeDir+"/.ssh/id_rsa", "-N", "")
@@ -637,32 +652,89 @@ func printAvailableFlags() {
 	fmt.Println("-sf string \nAbsolute path for schema file, default: " + os.Getenv("SCHEMA_FILE_PATH"))
 }
 
-func ExtractNodeJsRepoVersion() {
-	// cmdNodeRepoVersion := exec.Command("sudo", "apt-cache", "madison", "nodejs")
-	// outputNodeRepos, err := cmdNodeRepoVersion.Output()
+func CopyDir(src string, dst string) error {
+	// Get list of files and directories in source directory
+	files, err := ioutil.ReadDir(src)
+	if err != nil {
+		return err
+	}
 
-	// if err != nil {
-	// 	log.Fatal(Red, "Unable to get nodejs versions from cache", Reset)
-	// }
-	// output := string(outputNodeRepos)
-	// cacheVersionStringArray := strings.Split(output, "|")
-	// log.Println("cache version: ", cacheVersionStringArray[1])
+	// Create destination directory if it doesn't exist
+	if _, err := os.Stat(dst); os.IsNotExist(err) {
+		if err := os.MkdirAll(dst, os.ModePerm); err != nil {
+			return err
+		}
+	}
 
-	// cmdNodeRepo := exec.Command("bash", "-c", "curl", "-fsSL", os.Getenv("NODE_SETUP_URL"), "|", "sudo", "-E", "bash", "-")
-	// cmdNodeRepo := exec.Command("bash", "-c", "curl -fsSL "+os.Getenv("NODE_SETUP_URL")+" | sudo -E bash -")
-	// outputNodeRepo, err := cmdNodeRepo.CombinedOutput()
-	// if err != nil {
-	// 	log.Fatal(Red, "Unable to run curl to fetch node setup: ", string(outputNodeRepo), err, Reset)
-	// }
-	// fmt.Println(Yellow, "Installing nodejs version ", *config.NodeVersion, Reset)
-	// // now install node-js
-	// cmdNodejs := exec.Command("sudo", "apt", "install", "nodejs="+*config.NodeVersion, "-y")
-	// outputNodejs, err := cmdNodejs.Output()
-	// if err != nil {
-	// 	log.Fatal(Red, "Unable to install nodejs version :", *config.NodeVersion, "output: ", string(outputNodejs), Reset)
-	// }
-	// fmt.Println(Green, "Installed nodejs version ", *config.NodeVersion, Reset)
+	for _, file := range files {
+		srcPath := filepath.Join(src, file.Name())
+		dstPath := filepath.Join(dst, file.Name())
 
+		if file.IsDir() {
+			// Recursively copy directories
+			if err := CopyDir(srcPath, dstPath); err != nil {
+				return err
+			}
+		} else {
+			// Copy files
+			if err := CopyFile(srcPath, dstPath); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func CopyFile(src string, dst string) error {
+	// Open source file
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	// Create or truncate destination file
+	dstFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	// Copy contents from source to destination
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		return err
+	}
+
+	// Flush and sync to ensure data is written to disk
+	if err := dstFile.Sync(); err != nil {
+		return err
+	}
+
+	// Set file permissions to be readable, writable, and executable by everyone
+	if err := os.Chmod(dst, 0777); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// This functions sets either the directory or the the file to be readable, writable, and executable by everyone
+func SetPermissions(path string) error {
+	perm := os.FileMode(0777)
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if err := os.Chmod(path, perm); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func EnvVariablesCheck() bool {
@@ -702,5 +774,9 @@ func EnvVariablesCheck() bool {
 	//	fmt.Println(Red, "NODE_SETUP_URL env var not set...please set it to the desired version.", Reset)
 	//	return false
 	//}
+	if os.Getenv("HOME_DIR") == "" {
+		fmt.Println(Red, "HOME_DIR env var not set...please set it.", Reset)
+		return false
+	}
 	return true
 }
