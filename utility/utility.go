@@ -279,6 +279,18 @@ func FindPermissionDenied(output string) bool {
 	return false
 }
 
+// Function to check if HOME_DIR exists or not
+func CheckHOMEexists() {
+	_, err := os.Stat(os.Getenv("HOME_DIR"))
+	if err != nil || os.Getenv("USER_NAME") == "" {
+		if err == nil {
+			log.Fatal(Red, "Cannot determine correct user directory, please specify  `USER_NAME` env variable.", Reset)
+		} else {
+			log.Fatal(Red, err.Error(), "please specify correct `USER_NAME` env variable.", Reset)
+		}
+	}
+}
+
 // Function to fetch script & return as string
 func FetchScript(url string) (string, error) {
 	resp, err := http.Get(url)
@@ -362,10 +374,15 @@ func makeFlowsBackupJson() {
 	backupFilePath := filepath.Join(homeDir, "flows-backup.json")
 
 	// Write flows.json content to flows-backup.json
-	err = ioutil.WriteFile(backupFilePath, flowsContent, 0777)
+	err = ioutil.WriteFile(backupFilePath, flowsContent, 0644)
 	if err != nil {
 		Logger(err, Error)
 		log.Fatal(Red, "Failed to write flows-backup.json: \n", err, Reset)
+	}
+	// give permission to the user
+	err = SetPermissions(backupFilePath)
+	if err != nil {
+		fmt.Println(Yellow, "error setting permission for backupFilePath: ", err, Reset)
 	}
 
 	fmt.Println(Green, "Backup of flows.json created successfully at ->", flowsFilePath, Reset)
@@ -376,7 +393,8 @@ func OpenLogFile() *os.File {
 	currentDir, _ := os.Getwd()
 
 	// Get current date in the format "02_01_2006" (day_month_year)
-	currentDate := time.Now().Format("02_01_2006")
+	// currentDate := time.Now().Format("02_01_2006") // prev
+	currentDate := time.Now().Format("02_01_2006_15_04_05")
 
 	// Construct log file name with current date
 	logFileURI := fmt.Sprintf("%s/auto_installer_log_%s.txt", currentDir, currentDate)
@@ -682,6 +700,11 @@ func CopyDir(src string, dst string) error {
 			}
 		}
 	}
+	// set permission for ssh key in user dir
+	err = SetPermissions(dst)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -712,28 +735,51 @@ func CopyFile(src string, dst string) error {
 	}
 
 	// Set file permissions to be readable, writable, and executable by everyone
-	if err := os.Chmod(dst, 0777); err != nil {
-		return err
-	}
+	// if err := os.Chmod(dst, 0777); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
 
-// This functions sets either the directory or the the file to be readable, writable, and executable by everyone
+// This functions sets either the directory or the the file to be readable, writable, and executable by the user specified in env var USER_NAME
 func SetPermissions(path string) error {
-	perm := os.FileMode(0777)
-	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	// Get username from environment variable
+	username := os.Getenv("USER_NAME")
+
+	// Lookup user to get UID and GID
+	u, err := user.Lookup(username)
+	if err != nil {
+		return err
+	}
+
+	// Convert UID and GID to integers
+	uid, err := strconv.Atoi(u.Uid)
+	if err != nil {
+		return err
+	}
+	gid, err := strconv.Atoi(u.Gid)
+	if err != nil {
+		return err
+	}
+
+	// Walk through files in the directory
+	err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if err := os.Chmod(path, perm); err != nil {
+
+		// Change ownership of the file
+		if err := os.Chown(path, uid, gid); err != nil {
 			return err
 		}
+
 		return nil
 	})
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

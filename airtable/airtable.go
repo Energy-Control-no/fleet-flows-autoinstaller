@@ -130,6 +130,8 @@ func CreateAirtableRecord(hostname, sshKey string) error {
 					"SSH Public Key": sshKey,
 					"type":           strings.Split(hostname, "-")[0],
 					"Unipi SN":       strings.Split(hostname, "-")[1],
+					// "type":           "TEST",  // test
+					// "Unipi SN":       "SN10",  // test
 				},
 			},
 		},
@@ -253,6 +255,8 @@ func FetchAirtableRecordIDBySSHKey(SSHKey string) (string, error) {
 }
 func FetchAirtableRecordIDByDeviceId(deviceId string) (string, error) {
 	maxTries, _ := strconv.Atoi(os.Getenv("MAX_RETRIES"))
+	// for test
+	// deviceId = "TEST-SN10"
 	// Encode the hostname to use in the URL
 	part2 := strings.Split(deviceId, "-")[1]
 	if len(part2) <= 2 {

@@ -34,10 +34,14 @@ func main() {
 	if !utility.CheckForElevatedPriveleges() {
 		return
 	}
+
 	// Check if any flags are passed and are they valid
 	if !utility.CheckFlags(os.Args) {
 		return
 	}
+
+	// check if homeDir exists or not
+	utility.CheckHOMEexists()
 
 	// opening log file
 	utility.LogFile = utility.OpenLogFile()

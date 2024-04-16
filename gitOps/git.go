@@ -304,11 +304,17 @@ func CreateEnvFile() {
 	CONFIGS_DIR=%s/fleet-files/config
 	RESTART_COMMAND='find %s/fleet-files -maxdepth 1 -type f -exec cp {} %s/.node-red/ \; && sudo killall node-red & node-red'
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
-	err = ioutil.WriteFile(envFilePath, envContent, 0777)
+	err = ioutil.WriteFile(envFilePath, envContent, 0644)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating environment file: ", err, utility.Reset)
 	}
+	// give permission to the user
+	err = utility.SetPermissions(envFilePath)
+	if err != nil {
+		fmt.Println(utility.Yellow, "error setting permission for envFilePath: ", err, utility.Reset)
+	}
+
 	fmt.Println(utility.BrightGreen, "Environment file created successfully.", utility.Reset)
 }
 func CreateSchemaFile() {
@@ -350,10 +356,15 @@ func CreateSchemaFile() {
 		  	- basedOn: "flow://welcome"
 			- description: "Welcome to Fleet-Flows"
 	`))
-	err = ioutil.WriteFile(schemaFilePath, schemaContent, 0777)
+	err = ioutil.WriteFile(schemaFilePath, schemaContent, 0644)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error creating schema file: ", err, utility.Reset)
+	}
+	// give permission to the user
+	err = utility.SetPermissions(schemaFilePath)
+	if err != nil {
+		fmt.Println(utility.Yellow, "error setting permission for schemaFilePath: ", err, utility.Reset)
 	}
 	fmt.Println(utility.BrightGreen, "Schema file created successfully.", utility.Reset)
 }

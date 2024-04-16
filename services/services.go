@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"os/user"
 	"strings"
 )
 
@@ -35,7 +34,8 @@ func CreateServices() {
 func createSystemdService() {
 	//homeDir, err := os.UserHomeDir()
 	homeDir := os.Getenv("HOME_DIR")
-	user, _ := user.Current()
+	// user, _ := user.Current()  // PREV
+	user := os.Getenv("USER_NAME")
 	/*
 		if err != nil {
 			utility.Logger(err, utility.Error)
@@ -73,7 +73,7 @@ KillSignal=SIGINT
 
 [Install]
 WantedBy=multi-user.target
-`, npmLocation, homeDir, user.Username)
+`, npmLocation, homeDir, user)
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
@@ -147,11 +147,15 @@ monitor_and_restart() {
 monitor_and_restart
 `, projectDir, logFile)
 
-	err := ioutil.WriteFile(config.RestartScript, []byte(scriptContent), 0777)
+	err := ioutil.WriteFile(config.RestartScript, []byte(scriptContent), 0755)
 	if err != nil {
 		log.Fatal(utility.Red, "error writing restart script: ", err, utility.Reset)
 	}
-
+	// give permission to the user
+	err = utility.SetPermissions(config.RestartScript)
+	if err != nil {
+		fmt.Println(utility.Yellow, "error setting permission for restart script: ", err, utility.Reset)
+	}
 	// Change permissions of the restart script
 	cmd := exec.Command("sudo", "chmod", "+rx", config.RestartScript)
 	err = cmd.Run()
@@ -166,7 +170,8 @@ monitor_and_restart
 // this function triggers the restart script
 func createFleetFlowJSListenerService() {
 	// get host name
-	user, _ := user.Current()
+	// user, _ := user.Current() // prev
+	user := os.Getenv("USER_NAME")
 	// Define service file path
 	serviceFilePath := "/etc/systemd/system/fleet-flows-js-listener.service"
 
@@ -194,14 +199,18 @@ StartLimitInterval=60s
 
 [Install]
 WantedBy=multi-user.target
-`, user.Username)
+`, user)
 
 	_, err = file.WriteString(serviceContent)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing to systemd service file: ", err, utility.Reset)
 	}
-
+	// give permission to the user
+	err = utility.SetPermissions(serviceFilePath)
+	if err != nil {
+		fmt.Println(utility.Yellow, "error setting permission for FleetFlowJSListenerService: ", err, utility.Reset)
+	}
 	// Reload systemd daemon to read the new service file
 	cmd := exec.Command("sudo", "systemctl", "daemon-reload")
 	err = cmd.Run()
@@ -305,12 +314,16 @@ else
 fi
 `, homeDir, homeDir, *config.Repository, *config.FilesBranch)
 
-	err := ioutil.WriteFile(autoUpdaterScript, []byte(scriptContent), 0777)
+	err := ioutil.WriteFile(autoUpdaterScript, []byte(scriptContent), 0755)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		log.Fatal(utility.Red, "error writing auto-updater script: ", err, utility.Reset)
 	}
-
+	// give permission to the user
+	err = utility.SetPermissions(autoUpdaterScript)
+	if err != nil {
+		fmt.Println(utility.Yellow, "error setting permission for autoUpdaterScript: ", err, utility.Reset)
+	}
 	// Setup the cronjob for auto-update
 	cronjob := fmt.Sprintf("0 * * * * %s", autoUpdaterScript)
 

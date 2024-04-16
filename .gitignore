@@ -1,3 +1,6 @@
 .vscode
 .env
 Errorlogged.txt
+access_log.txt
+auto_installer_log*
+installer
