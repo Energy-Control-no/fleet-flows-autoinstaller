@@ -428,6 +428,16 @@ func SwitchDirectoriesAndCloneRepos() {
 
 	fmt.Println(utility.BrightGreen, "npm install completed successfully.", utility.Reset)
 
+	// set permissions for node_modules and package-lock.json
+	err = utility.SetPermissions(fleetFlowsJsDir + "/" + "node_modules")
+	if err != nil {
+		fmt.Println(utility.Yellow, "Unable to update permissions for node_modules", utility.Reset)
+	}
+	err = utility.SetPermissions(fleetFlowsJsDir + "/" + "package-lock.json")
+	if err != nil {
+		fmt.Println(utility.Yellow, "Unable to update permissions for node_modules", utility.Reset)
+	}
+
 	// create env file at fleet-flows-js dir
 	utility.ErrorLog.Output(2, "calling createEnvFile()......")
 	fmt.Println(utility.Yellow, "calling createEnvFile()......", utility.Reset)
