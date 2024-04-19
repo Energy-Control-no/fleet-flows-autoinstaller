@@ -612,8 +612,8 @@ func GenerateSSHKey(SSHKeyPath string) error {
 		log.Fatal("Error executing ssh-keygen:", err, "output: ", string(cmdOutput))
 	}
 	
-	if err := os.Chmod(sshKeyFilePath, 0600); err != nil {
-		log.Printf("Error setting file permissions for %s: %v\n", sshKeyFilePath, err)
+	if err := os.Chmod(homeDir+"/.ssh/id_rsa", 0600); err != nil {
+		log.Printf("Error setting file permissions for %s: %v\n", homeDir+"/.ssh/id_rsa", err)
 		return err
 	}
 	fmt.Println(Green, "SSH key pair generated successfully.", Reset)
