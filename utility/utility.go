@@ -777,7 +777,7 @@ func SetPermissions(path string) error {
 		if err := os.Chown(path, uid, gid); err != nil {
 			return err
 		}
-		if err := os.Chmod(path, 0600); err != nil {
+		if err := os.Chmod(path, 744); err != nil {
 			log.Printf("Error setting file permissions for %s: %v\n", path, err)
 			return err
 		}
