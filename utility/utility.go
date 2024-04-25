@@ -611,11 +611,7 @@ func GenerateSSHKey(SSHKeyPath string) error {
 		Logger(err, Error)
 		log.Fatal("Error executing ssh-keygen:", err, "output: ", string(cmdOutput))
 	}
-	
-	if err := os.Chmod(homeDir+"/.ssh/id_rsa", 0600); err != nil {
-		log.Printf("Error setting file permissions for %s: %v\n", homeDir+"/.ssh/id_rsa", err)
-		return err
-	}
+
 	fmt.Println(Green, "SSH key pair generated successfully.", Reset)
 	return nil
 }
@@ -746,6 +742,17 @@ func CopyFile(src string, dst string) error {
 	return nil
 }
 
+// function to recusively set permission to the provided path
+func ChmodRecursive(path string, mode os.FileMode) error {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		return os.Chmod(path, mode)
+	})
+	return err
+}
+
 // This functions sets either the directory or the the file to be readable, writable, and executable by the user specified in env var USER_NAME
 func SetPermissions(path string) error {
 	// Get username from environment variable
@@ -775,10 +782,6 @@ func SetPermissions(path string) error {
 
 		// Change ownership of the file
 		if err := os.Chown(path, uid, gid); err != nil {
-			return err
-		}
-		if err := os.Chmod(path, 744); err != nil {
-			log.Printf("Error setting file permissions for %s: %v\n", path, err)
 			return err
 		}
 

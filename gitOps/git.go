@@ -87,6 +87,11 @@ func CheckGitAccessAndCloneIfAccess() {
 					if err != nil {
 						log.Fatal(utility.Red+"Error while replicating ssh keys in", os.Getenv("HOME_DIR"), "error: ", err, utility.Reset)
 					}
+					fmt.Println(utility.Yellow+"Changing permission for the directory "+os.Getenv("HOME_DIR")+"/.ssh", utility.Reset)
+					err = utility.ChmodRecursive(os.Getenv("HOME_DIR")+"/.ssh", os.FileMode(0700))
+					if err != nil {
+						fmt.Println(utility.BrightYellow, "Unable to set chmod 700 for ", os.Getenv("HOME_DIR")+"/.ssh", "Error: ", err, utility.Reset)
+					}
 					// if already exists update it in Air Table
 					utility.ErrorLog.Output(2, "calling updateSSHKeyInAirtable()...")
 					fmt.Println(utility.Yellow + "calling updateSSHKeyInAirtable()..." + utility.Reset)
@@ -103,9 +108,15 @@ func CheckGitAccessAndCloneIfAccess() {
 						utility.Logger(err, utility.Error)
 						log.Fatal(utility.Red+"Error while generating PUB SSH KEY: ", err, utility.Reset)
 					}
+					fmt.Println(utility.Yellow + "Replicating the same keys in " + os.Getenv("HOME_DIR") + utility.Reset)
 					err = utility.CopyDir(homeDir+"/"+".ssh", os.Getenv("HOME_DIR")+"/.ssh")
 					if err != nil {
 						log.Fatal(utility.Red+"Error while replicating ssh keys in", os.Getenv("HOME_DIR"), "error: ", err, utility.Reset)
+					}
+					fmt.Println(utility.Yellow+"Changing permission for the directory "+os.Getenv("HOME_DIR")+"/.ssh", utility.Reset)
+					err = utility.ChmodRecursive(os.Getenv("HOME_DIR")+"/.ssh", os.FileMode(0700))
+					if err != nil {
+						fmt.Println(utility.BrightYellow, "Unable to set chmod 700 for ", os.Getenv("HOME_DIR")+"/.ssh", "Error: ", err, utility.Reset)
 					}
 					utility.ErrorLog.Output(2, "calling updateSSHKeyInAirtable()...")
 					fmt.Println(utility.Yellow + "calling updateSSHKeyInAirtable()..." + utility.Reset)
@@ -302,7 +313,7 @@ func CreateEnvFile() {
 	SCHEMA_FILE_PATH=%s
 	NODE_RED_DIRECTORY=%s/
 	CONFIGS_DIR=%s/fleet-files/config
-	RESTART_COMMAND='find %s/fleet-files -maxdepth 1 -type f -exec cp {} %s/.node-red/ \; && sudo kill $(pidof node-red)'
+	RESTART_COMMAND='find %s/fleet-files -maxdepth 1 -type f -exec cp {} %s/.node-red/ \; && sudo killall node-red & node-red'
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
 	err = ioutil.WriteFile(envFilePath, envContent, 0644)
 	if err != nil {
@@ -406,6 +417,8 @@ func SwitchDirectoriesAndCloneRepos() {
 		utility.Logger(err, utility.Error)
 		os.Exit(1)
 	}
+	// fleet-files directory path
+	fleetFilesDir := filepath.Join(homeDir, "fleet-files")
 
 	// Run npm install in fleet-flows-js
 	fleetFlowsJsDir := filepath.Join(homeDir, "fleet-flows-js")
@@ -437,7 +450,18 @@ func SwitchDirectoriesAndCloneRepos() {
 	if err != nil {
 		fmt.Println(utility.Yellow, "Unable to update permissions for node_modules", utility.Reset)
 	}
-
+	// chmod 754 for fleet-flows-js
+	fmt.Println(utility.Yellow+"Changing permission for the directory "+fleetFlowsJsDir, utility.Reset)
+	err = utility.ChmodRecursive(fleetFlowsJsDir, os.FileMode(0754))
+	if err != nil {
+		fmt.Println(utility.BrightYellow, "Unable to set chmod 754 for ", fleetFlowsJsDir, "Error: ", err, utility.Reset)
+	}
+	// chmod 754 for fleet-files
+	fmt.Println(utility.Yellow+"Changing permission for the directory "+fleetFilesDir, utility.Reset)
+	err = utility.ChmodRecursive(fleetFilesDir, os.FileMode(0754))
+	if err != nil {
+		fmt.Println(utility.BrightYellow, "Unable to set chmod 754 for ", fleetFilesDir, "Error: ", err, utility.Reset)
+	}
 	// create env file at fleet-flows-js dir
 	utility.ErrorLog.Output(2, "calling createEnvFile()......")
 	fmt.Println(utility.Yellow, "calling createEnvFile()......", utility.Reset)
