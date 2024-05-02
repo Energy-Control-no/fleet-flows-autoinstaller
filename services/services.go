@@ -123,16 +123,15 @@ func restartOnChanges() {
 
 echo "Listening..."
 # Define the project directory
-PROJECT_DIR=%s
 LOG_FILE="%s"
 
 # List of files to monitor within the project directory
-FILES=("schema.yml" ".env")
+FILES=("%s/schema.yml" "%s/.env")
 
 # Function to monitor changes and restart the service
 monitor_and_restart() {
     echo "Monitoring files for changes..." >> "$LOG_FILE"
-    inotifywait -m -e modify -q "${FILES[@]/#/$PROJECT_DIR/}" | while read -r line; do
+    inotifywait -m -e modify -q "${FILES[@]}" | while read -r line; do
         if systemctl is-active --quiet fleet-flows-js.service; then
             echo "File change detected: \$line" >> "$LOG_FILE"
             echo "Restarting the fleet-flows-js service..." >> "$LOG_FILE"
@@ -145,7 +144,7 @@ monitor_and_restart() {
 
 # Run the monitor function
 monitor_and_restart
-`, projectDir, logFile)
+`, logFile, projectDir, projectDir)
 
 	err := ioutil.WriteFile(config.RestartScript, []byte(scriptContent), 0755)
 	if err != nil {
