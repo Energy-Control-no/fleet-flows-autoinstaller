@@ -128,7 +128,6 @@ func EnsureNodeInstalled() {
 }
 
 func InstallN(nodePresent bool) {
-	//homeDir, _ := os.UserHomeDir()
 	homeDir := os.Getenv("HOME_DIR")
 
 	// Check if n is installed
@@ -185,10 +184,10 @@ func InstallN(nodePresent bool) {
 		if strings.Contains(output, "command not found") || output == "" {
 			fmt.Println(Yellow, "Installing make...", Reset)
 
-			cmd := exec.Command("sudo", "apt", "install", "make", "-y")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err = cmd.Run()
+			cmdMakeInstall := exec.Command("sudo", "apt", "install", "make", "-y")
+			cmdMakeInstall.Stdout = os.Stdout
+			cmdMakeInstall.Stderr = os.Stderr
+			err = cmdMakeInstall.Run()
 			if err != nil {
 				log.Fatal(Red, "Unable to install make: ", err, Reset)
 			}
@@ -196,10 +195,10 @@ func InstallN(nodePresent bool) {
 		}
 
 		fmt.Println(Yellow, "Running make install in n...", Reset)
-		cmd = exec.Command("make", "install")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
+		cmdMakeInstall := exec.Command("make", "install")
+		cmdMakeInstall.Stdout = os.Stdout
+		cmdMakeInstall.Stderr = os.Stderr
+		err = cmdMakeInstall.Run()
 		if err != nil {
 			fmt.Println(Red, "Error running make install in n:", err, Reset)
 			os.Exit(1)
@@ -225,6 +224,7 @@ func InstallN(nodePresent bool) {
 	}
 	fmt.Println(BrightGreen, "nodejs installed", Reset)
 }
+
 
 
 func CloneRepository(repoName, branch string, gitServer string) error {
