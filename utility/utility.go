@@ -128,7 +128,7 @@ func EnsureNodeInstalled() {
 }
 
 func InstallN(nodePresent bool) {
-	
+	//homeDir, _ := os.UserHomeDir()
 	homeDir := os.Getenv("HOME_DIR")
 
 	// Check if n is installed
@@ -136,13 +136,22 @@ func InstallN(nodePresent bool) {
 	outputN, err := cmdN.Output()
 	if err == nil {
 		fmt.Println(Green, "n is already installed with version: ", string(outputN), Reset)
+
+		fmt.Println(Yellow, "Installing nodejs version ", *config.NodeVersion, Reset)
+		// install desired node version here
+		cmdNodeVersion := exec.Command("n", *config.NodeVersion, "-y")
+		outputNodeVersion, err := cmdNodeVersion.Output()
+		if err != nil {
+			log.Fatal(Red, "Unable to install nodejs, error: ", err, Reset, Yellow, "output: ", string(outputNodeVersion), Reset)
+		}
+		fmt.Println(BrightGreen, "nodejs installed", Reset)
+
 		return
 	}
-	//homeDir, _ := os.UserHomeDir()
-	homeDir := os.Getenv("HOME_DIR")
+
 	// check if curl exists on host
 	cmdCurl := exec.Command("curl", "-V")
-	_, err := cmdCurl.Output()
+	_, err = cmdCurl.Output()
 	if err != nil {
 		fmt.Println(Yellow, "Installing Curl...", Reset)
 		cmdInstallCurl := exec.Command("sudo", "apt", "install", "curl", "-y")
@@ -153,9 +162,10 @@ func InstallN(nodePresent bool) {
 			log.Fatal(Red, "Unable to install curl: ", string(output), Reset)
 		}
 	}
+
 	// case when node is not present
 	if !nodePresent {
-		err := CloneRepository("n.git", "master", os.Getenv("GIT_SERVER"))
+		err = CloneRepository("n.git", "master", os.Getenv("GIT_SERVER"))
 		if err != nil {
 			return
 		}
@@ -169,60 +179,53 @@ func InstallN(nodePresent bool) {
 			os.Exit(1)
 		}
 		// install make if not present
-		cmdNPM := exec.Command("make", "-v")
-		outputNPM, _ := cmdNPM.CombinedOutput()
-		output := string(outputNPM)
+		cmdMake := exec.Command("make", "-v")
+		outputMake, _ := cmdMake.CombinedOutput()
+		output := string(outputMake)
 		if strings.Contains(output, "command not found") || output == "" {
-			fmt.Println(Yellow, "installing make...", Reset)
+			fmt.Println(Yellow, "Installing make...", Reset)
 
-			cmd := exec.Command("apt", "install", "make")
+			cmd := exec.Command("sudo", "apt", "install", "make", "-y")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err = cmd.Run()
 			if err != nil {
-				log.Fatal(Red, "unable to execute `make install`: ", err, Reset)
+				log.Fatal(Red, "Unable to install make: ", err, Reset)
 			}
-			fmt.Println(Green, "make installed", Reset)
+			fmt.Println(Green, "Make installed", Reset)
 		}
 
 		fmt.Println(Yellow, "Running make install in n...", Reset)
-		cmd := exec.Command("make", "install")
+		cmd = exec.Command("make", "install")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err = cmd.Run()
 		if err != nil {
-
-			fmt.Println("Error running make install in n:", err)
+			fmt.Println(Red, "Error running make install in n:", err, Reset)
 			os.Exit(1)
 		}
 		fmt.Println(BrightGreen, "n install completed successfully.", Reset)
 	} else {
-		// install make if not present
-		cmdN := exec.Command("n", "-v")
-		outputN, _ := cmdN.Output()
-
-		output := string(outputN)
-		if strings.Contains(output, "command not found") {
-			// else when node is present we can directly install n using npm
-			fmt.Println(Yellow, "installing n...", Reset)
-			cmdN := exec.Command("npm", "install", "-g", "n", "-y")
-			outputN, err := cmdN.Output()
-			if err != nil {
-				log.Fatal(Red, "Unable to install n, error: ", err, Reset, Yellow, "output: ", string(outputN), Reset)
-			}
-			fmt.Println(BrightGreen, "n install completed successfully.", Reset)
+		// install n using npm
+		fmt.Println(Yellow, "Installing n...", Reset)
+		cmdN = exec.Command("npm", "install", "-g", "n", "-y")
+		outputN, err = cmdN.Output()
+		if err != nil {
+			log.Fatal(Red, "Unable to install n, error: ", err, Reset, Yellow, "output: ", string(outputN), Reset)
 		}
-
+		fmt.Println(BrightGreen, "n install completed successfully.", Reset)
 	}
-	fmt.Println(Yellow, "installing nodejs version ", *config.NodeVersion, Reset)
+
+	fmt.Println(Yellow, "Installing nodejs version ", *config.NodeVersion, Reset)
 	// install desired node version here
 	cmdNodeVersion := exec.Command("n", *config.NodeVersion, "-y")
 	outputNodeVersion, err := cmdNodeVersion.Output()
 	if err != nil {
-		log.Fatal(Red, "Unable to install nodejs, error: ", err, Reset, Yellow, "output: ", outputNodeVersion, Reset)
+		log.Fatal(Red, "Unable to install nodejs, error: ", err, Reset, Yellow, "output: ", string(outputNodeVersion), Reset)
 	}
 	fmt.Println(BrightGreen, "nodejs installed", Reset)
 }
+
 
 func CloneRepository(repoName, branch string, gitServer string) error {
 	/*
