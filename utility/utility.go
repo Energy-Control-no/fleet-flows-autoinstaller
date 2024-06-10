@@ -120,7 +120,7 @@ func EnsureNodeInstalled() {
 	output := strings.TrimSpace(string(outputNPM))
 	if !strings.Contains(*config.NodeVersion, strings.Split(output, "v")[1]) {
 		// calling new function installN
-		InstallN(true)
+		InstallN(false)
 	} else {
 		fmt.Println(BrightGreen, "Nodejs already installed, version: ", output, Reset)
 	}
@@ -128,6 +128,16 @@ func EnsureNodeInstalled() {
 }
 
 func InstallN(nodePresent bool) {
+	
+	homeDir := os.Getenv("HOME_DIR")
+
+	// Check if n is installed
+	cmdN := exec.Command("n", "-V")
+	outputN, err := cmdN.Output()
+	if err == nil {
+		fmt.Println(Green, "n is already installed with version: ", string(outputN), Reset)
+		return
+	}
 	//homeDir, _ := os.UserHomeDir()
 	homeDir := os.Getenv("HOME_DIR")
 	// check if curl exists on host
