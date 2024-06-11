@@ -418,7 +418,7 @@ func SwitchDirectoriesAndCloneRepos() {
 	fmt.Println(utility.Yellow, "Running npm install in fleet-flows-js...", utility.Reset)
 
 	// Run the combined command for dynamic memory allocation
-	cmd := exec.Command("bash", "-c", "TOTAL_MEM=$(free -m | awk '/^Mem:/{print $2}') && ALLOCATED_MEM=$((TOTAL_MEM * 80 / 100)) && node --max-old-space-size=$ALLOCATED_MEM $(which npm) install --no-optional --prefer-offline")
+	cmd := exec.Command("bash", "-c", "TOTAL_MEM=$(free -m | awk '/^Mem:/{print $2}') && ALLOCATED_MEM=$((TOTAL_MEM * 80 / 100)) && node --max-old-space-size=$ALLOCATED_MEM $(which npm) install --omit=optional --prefer-offline")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
