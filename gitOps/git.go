@@ -2,12 +2,6 @@ package gitops
 
 import (
 	"fmt"
-
-	"installer/airtable"
-	config "installer/configs"
-	"installer/services"
-	"installer/utility"
-
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,6 +10,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"installer/airtable"
+	config "installer/configs"
+	"installer/services"
+	"installer/utility"
 )
 
 // all git operation functions are defined here
@@ -384,19 +382,9 @@ func CreateSchemaFile() {
 func SwitchDirectoriesAndCloneRepos() {
 	utility.ErrorLog.Output(2, "Switching directories.....")
 	fmt.Println(utility.Yellow + "Switching directories....." + utility.Reset)
-	// after all this is done now we switch directories
-	// getting users home dir
-	/*
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			fmt.Println("Error getting users home directory:", err)
-			os.Exit(1)
-		}
-	*/
+	
 	homeDir := os.Getenv("HOME_DIR")
 
-	// temporarily switching directories to clone repos
-	// Change directory to home directory
 	fmt.Println(utility.Yellow + "Changing to home dir....." + utility.Reset)
 	err := os.Chdir(homeDir)
 	if err != nil {
@@ -404,7 +392,6 @@ func SwitchDirectoriesAndCloneRepos() {
 		os.Exit(1)
 	}
 
-	// Function to clone Git repositories
 	fmt.Println(utility.Yellow + "Cloning repositories..." + utility.Reset)
 	err = CloneRepository("fleet-files", *config.FilesBranch, *config.Repository)
 	if err != nil {
@@ -417,10 +404,9 @@ func SwitchDirectoriesAndCloneRepos() {
 		utility.Logger(err, utility.Error)
 		os.Exit(1)
 	}
-	// fleet-files directory path
+
 	fleetFilesDir := filepath.Join(homeDir, "fleet-files")
 
-	// Run npm install in fleet-flows-js
 	fleetFlowsJsDir := filepath.Join(homeDir, "fleet-flows-js")
 	log.Println(utility.Yellow, "Changing to fleet-flows-js dir.....", utility.Reset)
 	err = os.Chdir(fleetFlowsJsDir)
@@ -430,7 +416,9 @@ func SwitchDirectoriesAndCloneRepos() {
 	}
 
 	fmt.Println(utility.Yellow, "Running npm install in fleet-flows-js...", utility.Reset)
-	cmd := exec.Command("npm", "install")
+
+	// Run the combined command for dynamic memory allocation
+	cmd := exec.Command("bash", "-c", "TOTAL_MEM=$(free -m | awk '/^Mem:/{print $2}') && ALLOCATED_MEM=$((TOTAL_MEM * 80 / 100)) && node --max-old-space-size=$ALLOCATED_MEM $(which npm) install --no-optional --prefer-offline")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
@@ -441,7 +429,6 @@ func SwitchDirectoriesAndCloneRepos() {
 
 	fmt.Println(utility.BrightGreen, "npm install completed successfully.", utility.Reset)
 
-	// set permissions for node_modules and package-lock.json
 	err = utility.SetPermissions(fleetFlowsJsDir + "/" + "node_modules")
 	if err != nil {
 		fmt.Println(utility.Yellow, "Unable to update permissions for node_modules", utility.Reset)
@@ -450,26 +437,24 @@ func SwitchDirectoriesAndCloneRepos() {
 	if err != nil {
 		fmt.Println(utility.Yellow, "Unable to update permissions for node_modules", utility.Reset)
 	}
-	// chmod 754 for fleet-flows-js
+
 	fmt.Println(utility.Yellow+"Changing permission for the directory "+fleetFlowsJsDir, utility.Reset)
 	err = utility.ChmodRecursive(fleetFlowsJsDir, os.FileMode(0754))
 	if err != nil {
 		fmt.Println(utility.BrightYellow, "Unable to set chmod 754 for ", fleetFlowsJsDir, "Error: ", err, utility.Reset)
 	}
-	// chmod 754 for fleet-files
+
 	fmt.Println(utility.Yellow+"Changing permission for the directory "+fleetFilesDir, utility.Reset)
 	err = utility.ChmodRecursive(fleetFilesDir, os.FileMode(0754))
 	if err != nil {
 		fmt.Println(utility.BrightYellow, "Unable to set chmod 754 for ", fleetFilesDir, "Error: ", err, utility.Reset)
 	}
-	// create env file at fleet-flows-js dir
+
 	utility.ErrorLog.Output(2, "calling createEnvFile()......")
 	fmt.Println(utility.Yellow, "calling createEnvFile()......", utility.Reset)
 	CreateEnvFile()
 
-	// create schema file at fleet-flows-js dir
 	utility.ErrorLog.Output(2, "calling createSchemaFile()......")
 	fmt.Println(utility.Yellow, "calling createSchemaFile()......", utility.Reset)
 	CreateSchemaFile()
-
 }
