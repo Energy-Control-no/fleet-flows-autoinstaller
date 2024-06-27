@@ -311,7 +311,7 @@ func CreateEnvFile() {
 	SCHEMA_FILE_PATH=%s
 	NODE_RED_DIRECTORY=%s/
 	CONFIGS_DIR=%s/fleet-files/config
-	RESTART_COMMAND='find /home/unipi/fleet-files -maxdepth 1 -type f -exec cp {} /home/unipi/.node-red/ \; && { PID=$(pidof node-red); [ -z "$PID" ] || sudo kill $PID; } ; node-red'
+	RESTART_COMMAND='find /home/unipi/fleet-files -maxdepth 1 -type f -exec cp {} /home/unipi/.node-red/ \; && PID=$(pidof node-red) ; [ -z "$PID" ] || sudo kill $PID ; sleep 2 ; node-red & sleep 5 ; pgrep -f node-red || echo "Error starting Node-RED"'
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
 	err = ioutil.WriteFile(envFilePath, envContent, 0644)
 	if err != nil {
