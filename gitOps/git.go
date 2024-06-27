@@ -360,6 +360,8 @@ func CreateSchemaFile() {
 	schemaContent := []byte(fmt.Sprintf(`# Environment variables
 	dependencies:
 		- ''
+  	configurations:
+   		- blank
 	flows:
 		'Welcome':
 		  	- basedOn: "flow://welcome"
