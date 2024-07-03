@@ -210,12 +210,17 @@ func FindPermissionDenied(output string) bool {
 
 // Runs the `git clone` command and clones repos
 func CloneRepository(repoName, branch string, gitServer string) error {
-
 	//homeDir, err := os.UserHomeDir()
 	//if err != nil {
 	//	log.Fatal(utility.Red, "Unable to get user home directory..", utility.Reset)
 	//}
 	homeDir := os.Getenv("HOME_DIR")
+
+	// Remove .git suffix from repoName
+	if strings.HasSuffix(repoName, ".git") {
+		repoName = strings.TrimSuffix(repoName, ".git")
+	}
+
 	repoPath := filepath.Join(homeDir, repoName) // Change this to the actual path
 
 	// Check if the repository directory already exists
@@ -240,7 +245,7 @@ func CloneRepository(repoName, branch string, gitServer string) error {
 		return nil
 	}
 	for {
-		cmd := exec.Command("git", "clone", "--single-branch", "--branch", branch, gitServer+"/"+repoName)
+		cmd := exec.Command("git", "clone", "--single-branch", "--branch", branch, gitServer+"/"+repoName+".git")
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			fmt.Printf(utility.Red+"Error cloning repository %s, (public key) access denied %v\n %s", repoName, err, utility.Reset)
