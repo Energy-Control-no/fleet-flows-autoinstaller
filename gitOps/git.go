@@ -395,7 +395,7 @@ func SwitchDirectoriesAndCloneRepos() {
 	}
 
 	fmt.Println(utility.Yellow + "Cloning repositories..." + utility.Reset)
-	err = CloneRepository("fleet-files", *config.FilesBranch, *config.Repository)
+	err = CloneRepository("fleet-files.git", *config.FilesBranch, *config.Repository)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		os.Exit(1)
