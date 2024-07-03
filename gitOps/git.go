@@ -167,7 +167,7 @@ func CheckGitAccess(repository string) bool {
 	// Attempt to clone into the temporary directory
 	var repoTocheckAccessFrom = os.Getenv("REPO_TO_CHECK_SERVER_ACCESS")
 	if repoTocheckAccessFrom == "" {
-		repoTocheckAccessFrom = "fleet-files"
+		repoTocheckAccessFrom = "fleet-files.git"
 	}
 	cmd := exec.Command("git", "clone", "-n", gitServer+"/"+repoTocheckAccessFrom, tempDir)
 	output, err := cmd.CombinedOutput()
@@ -395,13 +395,13 @@ func SwitchDirectoriesAndCloneRepos() {
 	}
 
 	fmt.Println(utility.Yellow + "Cloning repositories..." + utility.Reset)
-	err = CloneRepository("fleet-files", *config.FilesBranch, *config.Repository)
+	err = CloneRepository("fleet-files.git", *config.FilesBranch, *config.Repository)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		os.Exit(1)
 	}
 
-	err = CloneRepository("fleet-flows-js", *config.FilesBranch, *config.Repository)
+	err = CloneRepository("fleet-flows-js.git", *config.FilesBranch, *config.Repository)
 	if err != nil {
 		utility.Logger(err, utility.Error)
 		os.Exit(1)
