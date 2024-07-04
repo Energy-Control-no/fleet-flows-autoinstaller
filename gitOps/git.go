@@ -316,7 +316,7 @@ func CreateEnvFile() {
 	SCHEMA_FILE_PATH=%s
 	NODE_RED_DIRECTORY=%s/
 	CONFIGS_DIR=%s/fleet-files/config
-	RESTART_COMMAND='find /home/unipi/fleet-files -maxdepth 1 -type f -exec cp {} /home/unipi/.node-red/ \; && service=$(systemctl list-units --type=service --state=loaded | grep -Eo "^node.{0,4}\.service") && sudo systemctl is-active --quiet $service && sudo systemctl restart $service || sudo systemctl start $service'
+	RESTART_COMMAND='find /home/unipi/fleet-files -maxdepth 1 -type f -exec cp {} /home/unipi/.node-red/ \; && service=$(systemctl list-units --type=service --state=loaded | grep -Eo "node-?red\.service") && echo "Service found: $service" && if [ -n "$service" ]; then if sudo systemctl is-active --quiet $service; then echo "Restarting service: $service" && sudo systemctl restart $service; else echo "Starting service: $service" && sudo systemctl start $service; fi; else echo "No matching service found."; fi'
 	`, homeDir, *config.FilesBranch, homeDir, homeDir, homeDir, schemaFilePath, homeDir, homeDir, homeDir, homeDir))
 	err = ioutil.WriteFile(envFilePath, envContent, 0644)
 	if err != nil {
