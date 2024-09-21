@@ -242,7 +242,7 @@ func createAutoUpdateJob() {
 	// logFile := LOG_FILE
 	//homeDir, _ := os.UserHomeDir()
 	homeDir := os.Getenv("HOME_DIR")
-
+    user := os.Getenv("USER_NAME")
 	// Write script content to file
 	scriptContent := fmt.Sprintf(`#!/bin/bash
 
@@ -324,7 +324,8 @@ fi
 		fmt.Println(utility.Yellow, "error setting permission for autoUpdaterScript: ", err, utility.Reset)
 	}
 	// Setup the cronjob for auto-update
-	cronjob := fmt.Sprintf("0 * * * * %s", autoUpdaterScript)
+	cronjob := fmt.Sprintf("0 * * * * su %s -c \"%s\"", user, autoUpdaterScript)
+
 
 	// Write the updated cronjobs to the crontab
 	cmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | crontab -", cronjob))
